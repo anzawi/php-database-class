@@ -2,7 +2,8 @@ PDO Database Class
 ============================
 
 A database class for PHP-MySQL which uses the PDO extension.
-
+* Allows one connection with the database and deny duplicate connection, 
+* this speeds up to use the database and reduces the load on the server.
 If you have any questions go to : http://www.t3lam.net/PDO-class
 #### To Arabic go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية توجه الى
 ##To use the class
@@ -78,6 +79,16 @@ $db->update('users', $newValues, array('username', '=', 'Mohammad'));
 ```
 
 ####Note
+You can update more than one field in the same array
+```php
+$newValues  array(
+	'name' => 'Ahmed',
+	'username' => 'plapla',
+	'email' => 'pla@plalpa.com',
+	...
+);
+$db->update('users', $newValues, array('username', '=', 'Mohammad'));
+```
 update method look like this
 update('tablename', $newVaules =array(), $whereCondition = array());
 
@@ -91,6 +102,10 @@ $db->delete('users', array('id', '>=', 1));
 ```
 you can set where condition same update 
 * delete('users', array( field name  , operator  ,  value));
+```php
+<?php
+$db->delete('users', array('name', 'LIKE', 'mohammad));
+```
 ========================
 
 ### Note
@@ -115,6 +130,8 @@ foreach($allUsers as $singleUser) {
 
 // name and username in example are fields from table
 ```
+if you want to featch as array 
+go to line 99 replace PDO::FETCH_OBJ ->  to -> PDO::FETCH_ASSOC
 ## To Get Rows Count
 $count = $db->count();
 echo $count;
@@ -126,6 +143,38 @@ if(!$error) {
 } else {
 	echo "There is error";
 }
+```
+####NOTE:
+all methods return false if any error happen and true if all thing allright . except query if no error return an array
+so you can do something like this:
+```php
+<?php 
+// delete
+if($db->delete('users', array('id', '>=', 1))) {
+	echo "Deleted Successfully";
+} else {
+	echo "error Delete";
+}
+
+// insert
+if($db->insert('users', array('name' => 'pla pla'))) {
+	echo "Inserted Successfully";
+} else {
+	echo "error Insert";
+}
+
+// update 
+if($db->update('users', array('name' => 'pla pla'))) {
+	echo "Updated Successfully";
+} else {
+	echo "error Update";
+}
+
+// get data
+if($users = $db->query('users', "select * from users")->results()) {
+	print_r($users);
+} else {
+	echo "error Select From table";
 ```
 =============================
 #License
