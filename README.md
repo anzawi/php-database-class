@@ -39,7 +39,7 @@ $db = DB::get();
 $db->query("SELECT * FROM table_name")->results();
 
 // get first row -> return object
-$db->query("SELECT * FROM table_name WHERE field = value)->first();
+$db->query("SELECT * FROM table_name WHERE field = value")->first();
 ```
 
 ###Insert
