@@ -40,11 +40,8 @@ class DB
     private function __construct()
     {
         try {
-            $this->_pdo = new PDO("mysql:host=" . Config::get('mysql/host') . ";dbname=" . Config::get('mysql/dbname'),
-                                       Config::get('mysql/username'),
-                                       Config::get('mysql/password'),
-                                       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . Config::get('mysql/charset') )
-                                 );
+             $this->_pdo = new PDO("mysql:host=" . HOSTNAME . ";dbname=" . DBNAME, USERNAME, PASSWORD,
+-                                       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . CHARSET ));
         } catch(PDOException $e) {
             die($e->getMessage());
         }
