@@ -34,6 +34,7 @@ $db = DB::get();
 
 ## How it Work
 ###query
+
 ```php
 // get all -> return object
 $db->query("SELECT * FROM table_name")->results();
@@ -119,11 +120,33 @@ $db->query("INSERT INTO users (name) VALUES (?)", array('mohammad'));
 
 $db->query("UPDATE  users SET (name =?) WHERE id=1", array('AIi'));
 ```
+
+## Get First X number Rows
+methode getFirst accept 3 parameters 
+1- table name (required)
+2- rows number (required) by default 10 if kept empty
+3- where condition (optional)
+```php
+<?php
+
+$db->getFirst('table_name', 5, $where);
+```
+
+## Get Last X number Rows
+methode getLast accept 3 parameters 
+1- table name (required)
+2- rows number (required) by default 10 if kept empty
+3- where condition (optional)
+```php
+<?php
+
+$db->getLast('table_name', 5, $where);
+```
 =============
 
 ## How to user returned data
 ```php
-$allUsers = $db->query("SELECT * FROM table_name)-results();
+$allUsers = $db->query("SELECT * FROM table_name")->results();
 
 foreach($allUsers as $singleUser) {
 	echo $singleUser->name;
