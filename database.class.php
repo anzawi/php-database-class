@@ -40,8 +40,10 @@ class DB
     private function __construct()
     {
         try {
-            $this->_pdo = new PDO("mysql:host=" . HOSTNAME . ";dbname=" . DBNAME, USERNAME, PASSWORD,
-                                       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . CHARSET )
+            $this->_pdo = new PDO("mysql:host=" . Config::get('mysql/host') . ";dbname=" . Config::get('mysql/dbname'),
+                                       Config::get('mysql/username'),
+                                       Config::get('mysql/password'),
+                                       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . Config::get('mysql/charset') )
                                  );
         } catch(PDOException $e) {
             die($e->getMessage());
@@ -115,7 +117,7 @@ class DB
      * @param array $moreWhere
      * @return mixed
      */
-    public function action($table, $action, $where = array(), $moreWhere = array())
+    private function action($table, $action, $where = array(), $moreWhere = array())
     {
         // check if where = 3 fields (field, operator, value))
         if(count($where === 3)) {
@@ -179,7 +181,7 @@ class DB
              // generate sql statement
             $sql = "INSERT INTO {$table} (`" . implode('`,`', $fields) ."`)";
             $sql .= " VALUES({$value})";
-            // check if query is not have errors
+            // check if query is not have an error
             if(!$this->query($sql, $values)->error()) {
                     return true;
              }
@@ -216,7 +218,7 @@ class DB
         }
         // generate sql statement
         $sql = "UPDATE {$table} SET {$set} WHERE " . implode(" ", $where);
-        // check if query is not have errors
+        // check if query is not have an error
         if(!$this->query($sql, $values)->error()) {
             return true;
         }
@@ -253,6 +255,47 @@ class DB
         return $this->_error;
     }
     
+    /**
+     * DB::getFirst()
+     * get first x rows
+     * @param string $table
+     * @param integer $countRow
+     * @param array $where
+     * @return
+     */
+    public function getFirst($table,$countRow = 10, $where = array())
+    {
+        if($results = $this->query("SELECT * FROM {$table}", $where)->results()) {
+            $resultsFirstRows = array();
+            for($i = 0; $i < $countRow; $i++) {
+                $resultsFirstRows[$i] = $results[$i];
+            }
+            return $resultsFirstRows;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * DB::getLast()
+     * get last x rows
+     * @param string $table
+     * @param integer $countRow
+     * @param array $where
+     * @return
+     */
+    public function getLast($table, $countRow = 10, $where = array())
+    {
+        $resultsLastRows = array();
+        if($results = $this->query("SELECT * FROM {$table} ", $where)->results()) {
+            for($i = count($results) - 1; $i > $countRow + 1; $i--) {
+                $resultsLastRows[$i] = $results[$i];
+            }
+            return $resultsLastRows;
+        }
+        
+        return false;
+    }
     /**
      * DB::error()
      * return _results variable
