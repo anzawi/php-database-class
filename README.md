@@ -8,7 +8,7 @@ If you have any questions go to : http://www.t3lam.net/PDO-class
 
 #### To Arabic go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية توجه الى
 
-##To use the class
+##To use class
 
 ###declare constant variables
 
@@ -20,7 +20,7 @@ define(USERNAME, 'database_username');
 define(PASSWORD, 'database_password');
 define(CHARSET,  'charst'); // utf8 RECOMMENDED
 ```
-### Require the class in your project
+### Include the class in your project
 ```php
 <?php
 include_once('DB.class.php');
