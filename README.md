@@ -6,7 +6,7 @@ A database class for PHP-MySQL which uses the PDO extension.
 * this speeds up to use the database and reduces the load on the server.
 If you have any questions go to : http://www.t3lam.net/PDO-class
 
-#### To Arabic go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية توجه الى
+#### To Arabic go to : http://www.phptricks.org/PDO-class  : للشرح باللغة العربية توجه الى
 
 ##To use class
 
