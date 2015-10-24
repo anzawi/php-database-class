@@ -2,7 +2,6 @@
 /** 
  * DB 
  * database Class to ease cintroll of database 
- * @package t3lam.cms 
  * @author Mr Mohammad Anzawi 
  * @copyright 2015 
  * @version 1.0.1 
