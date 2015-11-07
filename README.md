@@ -6,17 +6,18 @@ A database class for PHP-MySQL which uses the PDO extension.
 * this speeds up to use the database and reduces the load on the server.
 If you have any questions go to : http://www.phptricks.org/PDO-class
 
-<<<<<<< HEAD
-#### To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : للشرح بالعربية لاخر اصدار توجع الى
+* To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : للشرح باللغة العربية للاصدار  الحالي توجه الى
 
 
-#### To Arabic last version go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
+* To Arabic last version go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
+* 
 ##To use the class
+
 =======
-#### To Arabic go to : http://www.phptricks.org/PDO-class  : للشرح باللغة العربية توجه الى
+
+* To Arabic go to : http://www.phptricks.org/PDO-class  : للشرح باللغة العربية توجه الى
 
 ##To use class
->>>>>>> origin/master
 
 ###declare constant variables
 
@@ -316,20 +317,22 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 =============================
 #Change Log
 
-# 1.1.0
+#### 1.1.0
+
 * ADD Some Data Definition Language (DDL) functions.
-** ADD Create New Table 
-** ADD Drop Table
-** ADD Alter Table
-*** ADD Rename Column
-*** Change Column Name
-*** Drop Column
+  * ADD Create New Table 
+  * ADD Drop Table
+  * ADD Alter Table
+    * ADD new Column
+    * Change Column Name
+    * Drop Column
+    * Rename Column
 
-# 1.0.1
-* FIX first method -> to compatible with PHP V 5.3.*
+#### 1.0.1
+*FIX first method -> to compatible with PHP V 5.3.*
 
-# 1.0.0
-* First Release
+#### 1.0.0
+*First Release
 
 
 =============================
