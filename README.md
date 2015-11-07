@@ -6,8 +6,10 @@ A database class for PHP-MySQL which uses the PDO extension.
 * this speeds up to use the database and reduces the load on the server.
 If you have any questions go to : http://www.t3lam.net/PDO-class
 
-#### To Arabic go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية توجه الى
+#### To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : للشرح بالعربية لاخر اصدار توجع الى
 
+
+#### To Arabic last version go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
 ##To use the class
 
 ###declare constant variables
@@ -48,18 +50,18 @@ $db->query("SELECT * FROM table_name WHERE field = value")->first();
 suppose you want to insert (id, name, username, email) in ( users )table
 ```php
 <?php
-$userInformation = array(
+$userInformation = [
 	'id'       => 1,
 	'name'     => 'Mohammad',
 	'username' => 'Anzawi',
 	'email'    => 'email@example.com',
-);
+];
 
-$db->insert('users', $userInformation );
+$db->table('users')->insert($userInformation );
 ```
 
 #### Note
-* $userInformation = array( field name  , value )
+* $userInformation = [field name  , value]
 
 ###update
 suppose you want to update name for Mohammad
@@ -68,10 +70,10 @@ suppose you want to update name for Mohammad
 
 ```php
 <?php
-$newValues  array(
+$newValues  [
 	'name' => 'Ahmed',
-);
-$db->update('users', $newValues, array('id', '=', 1));
+];
+$db->->table('users')->update($newValues, ['id', '=', 1]);
 ```
 ####OR
 ```php
@@ -79,36 +81,37 @@ $db->update('users', $newValues, array('id', '=', 1));
 $newValues  array(
 	'name' => 'Ahmed',
 );
-$db->update('users', $newValues, array('username', '=', 'Mohammad'));
+$db->table('users')->update($newValues, ['username', '=', 'Mohammad']);
 ```
 
 ####Note
 You can update more than one field in the same array
 ```php
-$newValues  array(
+$newValues  [
 	'name' => 'Ahmed',
 	'username' => 'plapla',
 	'email' => 'pla@plalpa.com',
 	...
-);
-$db->update('users', $newValues, array('username', '=', 'Mohammad'));
+];
+
+$db->table('users')->update($newValues, ['username', '=', 'Mohammad']);
 ```
 update method look like this
-update('tablename', $newVaules =array(), $whereCondition = array());
+update->table('tablename')->update($newVaules = [], $whereCondition = []);
 
-* $newVaules = array( field name  , new value )
-* $whereCondition = array( field name  , operator  ,  value)
+* $newVaules = [field name  , new value]
+* $whereCondition = [field name  , operator  ,  value]
 
 ###delete
 ```php
 <?php
-$db->delete('users', array('id', '>=', 1));
+$db->table('users')->delete(['id', '>=', 1]);
 ```
 you can set where condition same update 
-* delete('users', array( field name  , operator  ,  value));
+* delete('users', [field name  , operator  ,  value]);
 ```php
 <?php
-$db->delete('users', array('name', 'LIKE', 'mohammad));
+$db->table('users')->delete(['name', 'LIKE', 'mohammad)]);
 ```
 ========================
 
@@ -116,31 +119,29 @@ $db->delete('users', array('name', 'LIKE', 'mohammad));
 You Can Insert , Update, Delete uses query method
 ```php
 <?php
-$db->query("INSERT INTO users (name) VALUES (?)", array('mohammad'));
+$db->query("INSERT INTO users (name) VALUES (?)", ['mohammad']);
 
-$db->query("UPDATE  users SET (name =?) WHERE id=1", array('AIi'));
+$db->query("UPDATE  users SET (name =?) WHERE id=1", ['AIi']);
 ```
 
 ## Get First X number Rows
 methode getFirst accept 3 parameters 
-1- table name (required)
-2- rows number (required) by default 10 if kept empty
-3- where condition (optional)
+1- rows number (required) by default 10 if kept empty
+2- where condition (optional)
 ```php
 <?php
 
-$db->getFirst('table_name', 5, $where);
+$db->table('table_name')->getFirst(5, $where);
 ```
 
 ## Get Last X number Rows
 methode getLast accept 3 parameters 
-1- table name (required)
-2- rows number (required) by default 10 if kept empty
-3- where condition (optional)
+1- rows number (required) by default 10 if kept empty
+2- where condition (optional)
 ```php
 <?php
 
-$db->getLast('table_name', 5, $where);
+$db->table('table_name')->getLast(5, $where);
 ```
 =============
 
@@ -157,7 +158,7 @@ foreach($allUsers as $singleUser) {
 // name and username in example are fields from table
 ```
 if you want to featch as array 
-go to line 99 replace PDO::FETCH_OBJ ->  to -> PDO::FETCH_ASSOC
+go to line 102 replace PDO::FETCH_OBJ ->  to -> PDO::FETCH_ASSOC
 ## To Get Rows Count
 $count = $db->count();
 echo $count;
@@ -176,32 +177,155 @@ so you can do something like this:
 ```php
 <?php 
 // delete
-if($db->delete('users', array('id', '>=', 1))) {
+if($db->table('users')->delete(['id', '>=', 1])) {
 	echo "Deleted Successfully";
 } else {
 	echo "error Delete";
 }
 
 // insert
-if($db->insert('users', array('name' => 'pla pla'))) {
+if($db->table('users')->insert(['name' => 'pla pla'])) {
 	echo "Inserted Successfully";
 } else {
 	echo "error Insert";
 }
 
 // update 
-if($db->update('users', array('name' => 'pla pla'))) {
+if($db->table('users')->update(['name' => 'pla pla'])) {
 	echo "Updated Successfully";
 } else {
 	echo "error Update";
 }
 
 // get data
-if($users = $db->query('users', "select * from users")->results()) {
+if($users = $db->table('users')->query("select * from users")->results()) {
 	print_r($users);
 } else {
 	echo "error Select From table";
 ```
+
+
+# NEW : Data Definition Language (DDL) :
+
+### Create Table : 
+
+```php
+$db = DB::get();
+
+$db->table('my_new_table_name')->schema('schema as array')->create();
+```
+EX : 
+
+```php
+$db = DB::get();
+
+$db->table('students')->schema([
+		'id' => 'increments',
+		'name' => 'string:255 | not_null',
+		'number' => 'int|unsigned';
+	])->create();
+```
+the SQL Statment for this :
+CREATE TABLE students (
+						id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL,
+						name VARCHAR(255) NOT NULL,
+						number INT UNSIGNED
+					
+					)
+					
+#### PLEAS NOTE: 
+'id' => 'increments'
+mean the id column well be integer,primary key, auto increment not null,  and unsigned
+
+### ADD Constraints
+'number' => 'int|my_constraint|other_constraint|more_constraint';
+
+SO the first one is a column type and other well be Constraints
+
+### Default Value
+
+to set defualt value type :
+'number' => 'int|unsigned|default:222';
+'name' => 'int|unsigned|default:hello-this-a-default-value';
+
+// note : the charecter (-) replaced with white space
+
+### Full Exable :
+```php
+$db = DB::get();
+
+$schema = [
+	'id' => 'increments',
+	'username' => 'string:100|not_null',
+	'full_name' => 'string:255|defualt:no-name',
+	'joind' => 'timestamps',
+	'user_email' => 'string:100|not_null',
+];
+
+$db->table('users')->schema($schema)->create();
+
+```
+#ADD Column :
+```php
+$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('table')->alterSchema(['add', 'column_name', 'type'])->alter();
+```
+####EX:
+```php
+$db->table('users')->alterSchema(['add', 'last_login', 'date'])->alter();
+```
+
+#RENAME Column :
+```php
+$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('table')->alterSchema(['rename', 'column_name', 'new_column_name' ,'type'])->alter();
+```
+####EX:
+```php
+$db->table('users')->alterSchema(['rename', 'last_login', 'last_session', 'date'])->alter();
+```
+
+#EDITE Column  type:
+```php
+$db->table('table')->alterSchema(['modify', 'column_name', 'new_type'])->alter();
+```
+####EX:
+```php
+$db->table('users')->alterSchema(['modify', 'full_name', 'text'])->alter();
+```
+
+#DROP Column :
+```php
+$db->table('table')->alterSchema(['drop', 'column_name'])->alter();
+```
+####EX:
+```php
+$db->table('users')->alterSchema(['drop', 'full_name'])->alter();
+```
+
+###THATS IT :) 
+
+###I HOPE THIE HELP YOU.
+
+=============================
+#Change Log
+
+# 1.1.0
+* ADD Some Data Definition Language (DDL) functions.
+** ADD Create New Table 
+** ADD Drop Table
+** ADD Alter Table
+*** ADD Rename Column
+*** Change Column Name
+*** Drop Column
+
+# 1.0.1
+* FIX first method -> to compatible with PHP V 5.3.*
+
+# 1.0.0
+* First Release
+
+
 =============================
 #License
 ### No License For This Class You are Free To Use it :)
