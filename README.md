@@ -252,12 +252,13 @@ SO the first one is a column type and other well be Constraints
 ### Default Value
 
 to set defualt value type :
+```php
 'number' => 'int|unsigned|default:222';
 'name' => 'int|unsigned|default:hello-this-a-default-value';
 
 // note : the charecter (-) replaced with white space
-
-### Full Exable :
+```
+### Full Example :
 ```php
 $db = DB::get();
 
