@@ -4,13 +4,19 @@ PDO Database Class
 A database class for PHP-MySQL which uses the PDO extension.
 * Allows one connection with the database and deny duplicate connection, 
 * this speeds up to use the database and reduces the load on the server.
-If you have any questions go to : http://www.t3lam.net/PDO-class
+If you have any questions go to : http://www.phptricks.org/PDO-class
 
+<<<<<<< HEAD
 #### To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : للشرح بالعربية لاخر اصدار توجع الى
 
 
 #### To Arabic last version go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
 ##To use the class
+=======
+#### To Arabic go to : http://www.phptricks.org/PDO-class  : للشرح باللغة العربية توجه الى
+
+##To use class
+>>>>>>> origin/master
 
 ###declare constant variables
 
@@ -22,7 +28,7 @@ define(USERNAME, 'database_username');
 define(PASSWORD, 'database_password');
 define(CHARSET,  'charst'); // utf8 RECOMMENDED
 ```
-### Require the class in your project
+### Include the class in your project
 ```php
 <?php
 include_once('DB.class.php');

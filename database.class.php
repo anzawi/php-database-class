@@ -4,7 +4,11 @@
  * database Class to ease cintroll of database 
  * @author Mr Mohammad Anzawi 
  * @copyright 2015 
+<<<<<<< HEAD
  * @version 1.1.0 
+=======
+ * @version 1.0.1 
+>>>>>>> origin/master
  * @access public 
  */ 
  /** 
@@ -31,9 +35,13 @@ class DB
             $_query, 
             $_results, 
             $_count, 
+<<<<<<< HEAD
             $_error = false,
             $_table,
             $_schema; 
+=======
+            $_error = false; 
+>>>>>>> origin/master
     
     /** 
      * DB::__construct() 
@@ -44,9 +52,14 @@ class DB
     private function __construct() 
     { 
         try { 
+<<<<<<< HEAD
              $this->_pdo = new PDO("mysql:host=" . HOST . ";dbname=" . DBNAME, USERNAME, PASSWORD); 
               $this->_pdo->exec("set names " . CHARSET); 
               $this->_pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+=======
+             $this->_pdo = new PDO("mysql:host=" . HOSTNAME . ";dbname=" . DBNAME, USERNAME, PASSWORD); 
+              $this->_pdo->exec("set names " . CHARSET); 
+>>>>>>> origin/master
         } catch(PDOException $e) { 
             die($e->getMessage()); 
         } 
@@ -77,7 +90,10 @@ class DB
      */ 
     public function query($sql, $params = array()) 
     { 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
         // set _erroe. true to that if they can not be false for this function to work properly, this function makes the value of _error false if there is no implementation of the sentence correctly 
         $this->_error = false; 
         // check if sql statement is prepared 
@@ -144,6 +160,7 @@ class DB
         } 
         return false; 
     } 
+<<<<<<< HEAD
     
     /** 
      * DB::insert() 
@@ -522,3 +539,181 @@ class DB
             $this->_schema = "MODIFY {$options[1]} {$options[2]}";
     }
 }
+=======
+    
+    /** 
+     * DB::insert() 
+     * insert into database tables 
+     * @param string $table 
+     * @param array $values 
+     * @return bool 
+     */ 
+    public function insert($table, $values = array()) 
+    { 
+        // check if $values set 
+        if(count($values)) { 
+            /** 
+             * @var $fields type array 
+             * store fields user want insert value for them 
+             */ 
+            $fields = array_keys($values); 
+            /** 
+             * @var $value type string 
+             * store value for fields user want inserted 
+             */ 
+            $value = ''; 
+            /** 
+             * @var $x type int 
+             * counter 
+             */ 
+            $x = 1; 
+            foreach($values as $field) { 
+                // add new value 
+                $value .="?"; 
+                
+                if($x < count($values)) { 
+                    // add comma between values 
+                    $value .= ", "; 
+                } 
+                $x++; 
+            } 
+             // generate sql statement 
+            $sql = "INSERT INTO {$table} (`" . implode('`,`', $fields) ."`)"; 
+            $sql .= " VALUES({$value})"; 
+            // check if query is not have an error 
+            if(!$this->query($sql, $values)->error()) { 
+                    return true; 
+             } 
+        } 
+        
+        return false; 
+    } 
+    
+    /** 
+     * DB::update() 
+     * 
+     * @param string $table 
+     * @param array $values 
+     * @param array $where 
+     * @return bool 
+     */ 
+    public function update($table, $values = array(), $where = array()) 
+    { 
+        /** 
+         * @var $set type string 
+         * store update value 
+         * @example "colomn = value" 
+         */ 
+        $set = ''; // initialize $set 
+        $x = 1; 
+        // initialize feilds and values 
+        foreach($values as $i => $row) { 
+            $set .= "{$i} = ?"; 
+            // add comma between values 
+            if($x < count($values)) { 
+                $set .= " ,"; 
+            } 
+            $x++; 
+        } 
+        // generate sql statement 
+        $sql = "UPDATE {$table} SET {$set} WHERE " . implode(" ", $where); 
+        // check if query is not have an error 
+        if(!$this->query($sql, $values)->error()) { 
+            return true; 
+        } 
+        
+        return false; 
+    } 
+    
+    /** 
+     * DB::delete() 
+     * delete row from table 
+     * @param string $table 
+     * @param array $where 
+     * @return bool 
+     */ 
+    public function delete($table, $where = array()) 
+    { 
+        // check if $where is set 
+        if(count($where)) { 
+            // call action method 
+            if($this->action($table, "DELETE", $where)) { 
+                return true; 
+            } 
+        } 
+        return false; 
+    } 
+    
+    /** 
+     * DB::error() 
+     * return _error variable 
+     * @return bool 
+     */ 
+    public function error() 
+    { 
+        return $this->_error; 
+    } 
+    
+    /** 
+     * DB::getFirst() 
+     * get first x rows 
+     * @param string $table 
+     * @param integer $countRow 
+     * @param array $where 
+     * @return 
+     */ 
+    public function getFirst($table,$countRow = 10, $where = array()) 
+    { 
+        if($results = $this->query("SELECT * FROM {$table}", $where)->results()) { 
+            $resultsFirstRows = array(); 
+            for($i = 0; $i < $countRow; $i++) { 
+                $resultsFirstRows[$i] = $results[$i]; 
+            } 
+            return $resultsFirstRows; 
+        } 
+        
+        return false; 
+    } 
+    
+    /** 
+     * DB::getLast() 
+     * get last x rows 
+     * @param string $table 
+     * @param integer $countRow 
+     * @param array $where 
+     * @return 
+     */ 
+    public function getLast($table, $countRow = 10, $where = array()) 
+    { 
+        $resultsLastRows = array(); 
+        if($results = $this->query("SELECT * FROM {$table} ", $where)->results()) { 
+            for($i = count($results) - 1; $i > $countRow + 1; $i--) { 
+                $resultsLastRows[$i] = $results[$i]; 
+            } 
+            return $resultsLastRows; 
+        } 
+        
+        return false; 
+    } 
+    /** 
+     * DB::error() 
+     * return _results variable 
+     * @return array 
+     */ 
+    public function results() 
+    { 
+        return $this->_results; 
+    } 
+    
+    /** 
+     * DB::error() 
+     * return first key from results method 
+     * @return string 
+     */ 
+    public function first() 
+    { 
+        $temp = $this->results(); 
+        return $temp[0]; 
+    } 
+} 
+>>>>>>> origin/master
