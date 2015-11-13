@@ -6,10 +6,10 @@ A database class for PHP-MySQL which uses the PDO extension.
 * this speeds up to use the database and reduces the load on the server.
 If you have any questions go to : http://www.phptricks.org/PDO-class
 
-* To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : للشرح باللغة العربية للاصدار  الحالي توجه الى
+* To Arabic latst version go to : http:/www.phptricks.org/PDO-class-v-2  : للشرح باللغة العربية للاصدار  الحالي توجه الى
 
 
-* To Arabic last version go to : http://www.t3lam.net/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
+* To Arabic last version go to : http://www.phptricks.org/PDO-class  : للشرح باللغة العربية للاصدار السابق توجه الى
 * 
 ##To use the class
 
@@ -77,7 +77,7 @@ suppose you want to update name for Mohammad
 
 ```php
 <?php
-$newValues  [
+$newValues = [
 	'name' => 'Ahmed',
 ];
 $db->->table('users')->update($newValues, ['id', '=', 1]);
@@ -85,16 +85,16 @@ $db->->table('users')->update($newValues, ['id', '=', 1]);
 ####OR
 ```php
 <?php
-$newValues  array(
+$newValues = [
 	'name' => 'Ahmed',
-);
+];
 $db->table('users')->update($newValues, ['username', '=', 'Mohammad']);
 ```
 
 ####Note
 You can update more than one field in the same array
 ```php
-$newValues  [
+$newValues = [
 	'name' => 'Ahmed',
 	'username' => 'plapla',
 	'email' => 'pla@plalpa.com',
@@ -275,7 +275,7 @@ $db->table('users')->schema($schema)->create();
 ```
 #ADD Column :
 ```php
-$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('target_table')->alterSchema('condetions is array')->alter();
 $db->table('table')->alterSchema(['add', 'column_name', 'type'])->alter();
 ```
 ####EX:
@@ -285,7 +285,7 @@ $db->table('users')->alterSchema(['add', 'last_login', 'date'])->alter();
 
 #RENAME Column :
 ```php
-$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('target_table')->alterSchema('condetions is array')->alter();
 $db->table('table')->alterSchema(['rename', 'column_name', 'new_column_name' ,'type'])->alter();
 ```
 ####EX:
@@ -293,7 +293,7 @@ $db->table('table')->alterSchema(['rename', 'column_name', 'new_column_name' ,'t
 $db->table('users')->alterSchema(['rename', 'last_login', 'last_session', 'date'])->alter();
 ```
 
-#EDITE Column  type:
+#EDIT Column  type:
 ```php
 $db->table('table')->alterSchema(['modify', 'column_name', 'new_type'])->alter();
 ```
