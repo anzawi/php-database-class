@@ -75,19 +75,19 @@ If you have any issue please open isseu to fix it.
     ```php
     $post = $db->table('posts')->where('id', '=', 5)->select();
     // or
-    $post = $db->where('id', 5)->select();
+    $post = $db->table('posts')->where('id', 5)->select();
     // Custom fields
     $post = $db->table('posts')->where('id', 5)->select(['id', 'title', 'body']);
     ```
 - multi where :
     ```php
-    $post = $db->table('posts')-
-        >where('vorw', '>', 5)
+    $post = $db->table('posts')
+    ->where('vote', '>', 5)
         ->where('visetors', '>', 200)
         ->select();
     // Custom fields
      $post = $db->table('posts')
-        ->where('vorw', '>', 5)
+        ->where('vote', '>', 5)
         ->where('visetors', '>', 200)
         ->select(['id', 'title', 'body']);
     ```
