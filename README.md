@@ -96,13 +96,13 @@ If you have any issue please open isseu to fix it.
 ### where types :
 - whereBetween() :
     ```php
-    $db->->table('posts')
+    $db->table('posts')
         ->whereBetween('data', [$start, $end])
         ->select();
     ```
 - likeWhere() :
     ```php
-    $db->->table('users')
+    $db->table('users')
         ->likeWhere('name', 'mohammad')
         ->select();
     ```
@@ -190,14 +190,14 @@ $db->table('posts')
 ### Create Table : 
 
 ```php
-$db = DB::get();
+$db = Database::connect();
 
 $db->table('my_new_table_name')->schema('schema as array')->create();
 ```
 EX : 
 
 ```php
-$db = DB::get();
+$db = Database::connect();
 
 $db->table('students')->schema([
 		'id' => 'increments',
@@ -233,7 +233,7 @@ to set defualt value type :
 ```
 ### Full Example :
 ```php
-$db = DB::get();
+$db = Database::connect();
 
 $schema = [
 	'id' => 'increments',
