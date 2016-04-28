@@ -15,6 +15,12 @@ If you have any issue please open isseu to fix it.
 
 * To Arabic v-1 go to : http://www.phptricks.org/PDO-class  : للشرح بالغة العربية للاصدار 1 توجه الى
 
+
+### install via composer 
+```json
+composer require phptricks/database_class
+```
+
 --------------------
 # to use class :
 
