@@ -18,7 +18,12 @@ If you have any issue please open isseu to fix it.
 
 ### install via composer 
 ```json
-composer require phptricks/database_class
+{
+	"require" : 
+	{
+		"phptricks/database_class" : "dev-master"
+	}
+}
 ```
 
 --------------------
