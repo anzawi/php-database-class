@@ -1,6 +1,7 @@
 {
-    "name": "phptricks/database_class",
+    "name": "phptricks/database",
     "description": "A database class which uses the PDO extension, Supports many drivers",
+    "type": "class",
     "license": "MIT",
     "authors": [
         {
@@ -8,8 +9,6 @@
             "email": "m.anzawi2013@gmail.com"
         }
     ],
-     "require": {
-        "php": ">=5.3.0"
-    },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "require": {}
 }
