@@ -1,5 +1,5 @@
 {
-    "name": "phptricks/database",
+    "name": "phptricks/database_class",
     "description": "A database class which uses the PDO extension, Supports many drivers",
     "type": "class",
     "license": "MIT",
