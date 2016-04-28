@@ -1,17 +1,1 @@
-"repositories": [
-{
-	"type": "package",
-	"package": {
-		"name": "phptricks/database_class",
-		"version": "2.0.0",
-		"description": "A database class which uses the PDO extension, Supports many drivers",
-		},
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "mohammad walid anzawi",
-			"email": "m.anzawi2013@gmail.com"
-		}
-	]
-}
-]
+
