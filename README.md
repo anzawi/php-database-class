@@ -1,217 +1,180 @@
 PDO Database Class
 ============================
 
-A database class for PHP-MySQL which uses the PDO extension.
+A database class which uses the PDO extension.
 * Allows one connection with the database and deny duplicate connection, 
 * this speeds up to use the database and reduces the load on the server.
-If you have any questions go to : http://www.phptricks.org/PDO-class
+* supports many drivers (mysql, sqlite, PostgreSQL, mssql, sybase, Oracle Call Interface -oci-)
 
-<<<<<<< HEAD
-#### To Arabic latst version go to : http://www.t3lam.net/PDO-class-v-2  : ŸÑŸÑÿ¥ÿ±ÿ≠ ÿ®ÿßŸÑÿπÿ±ÿ®Ÿäÿ© ŸÑÿßÿÆÿ± ÿßÿµÿØÿßÿ± ÿ™Ÿàÿ¨ÿπ ÿßŸÑŸâ
+If you have any issue please open isseu to fix it.
+
+* To Arabic latst version go to : http:/www.phptricks.org/PDO-class-v-2-xp  : ··‘—Õ »«··€… «·⁄—»Ì… ··«’œ«—  «·Õ«·Ì  ÊÃÂ «·Ï
 
 
-#### To Arabic last version go to : http://www.t3lam.net/PDO-class  : ŸÑŸÑÿ¥ÿ±ÿ≠ ÿ®ÿßŸÑŸÑÿ∫ÿ© ÿßŸÑÿπÿ±ÿ®Ÿäÿ© ŸÑŸÑÿßÿµÿØÿßÿ± ÿßŸÑÿ≥ÿßÿ®ŸÇ ÿ™Ÿàÿ¨Ÿá ÿßŸÑŸâ
-##To use the class
-=======
-#### To Arabic go to : http://www.phptricks.org/PDO-class  : ŸÑŸÑÿ¥ÿ±ÿ≠ ÿ®ÿßŸÑŸÑÿ∫ÿ© ÿßŸÑÿπÿ±ÿ®Ÿäÿ© ÿ™Ÿàÿ¨Ÿá ÿßŸÑŸâ
+* To Arabic v-2 go to : http://www.phptricks.org/PDO-class-v-2  : ··‘—Õ »«··€… «·⁄—»Ì… ··«’œ«— 2  ÊÃÂ «·Ï
 
-##To use class
->>>>>>> origin/master
+* To Arabic v-1 go to : http://www.phptricks.org/PDO-class  : ··‘—Õ »«·€… «·⁄—»Ì… ··«’œ«— 1  ÊÃÂ «·Ï
 
-###declare constant variables
+--------------------
+# to use class :
 
+## (config) :
+- go to (database_config.php) file
+- config class as your project need
+
+## describe configuration :
+ - fetch : PDO Fetch Style By default, database results will be returned as instances of the PHP stdClass object.
+ - default : Default Database Connection Name (driver) by default (mysql)
+ - connections : Database Connections (drivers).
+ 
+###### <<<<<< set database conection information..!  >>>>>>
+
+------------------
+# how to use :
+### step 1 : 
+ - Include the class in your project
+ 
 ```php
-<?php
-define(HOST,     'localhost');
-define(DBNAME,   'your_database_name');
-define(USERNAME, 'database_username');
-define(PASSWORD, 'database_password');
-define(CHARSET,  'charst'); // utf8 RECOMMENDED
+    <?php
+    include_once('phptricks/Database.php');
 ```
-### Include the class in your project
+### step 2 :
+- Create the instance (connect with database)
 ```php
-<?php
-include_once('DB.class.php');
-```
-###Create the instance
-```php
-<?php
-//  Get The Instance
-$db = DB::get();
-```
-
-## How it Work
-###query
-
-```php
-// get all -> return object
-$db->query("SELECT * FROM table_name")->results();
-
-// get first row -> return object
-$db->query("SELECT * FROM table_name WHERE field = value")->first();
+    use PHPtricks\Database\Database;
+    $db = Database::connect();
 ```
 
-###Insert
+# how it work (methods):
 
-suppose you want to insert (id, name, username, email) in ( users )table
+## select() :
+ - select all data from `test` table :
+    ```php
+    $allData = $db->table('test')->select();
+    
+    print_r($allData);
+    ```
+- select `id`, `name`, `email` fro all users from `users` table
+    ```php
+    $coustomFields = $db->table('users')->select(['id', 'name', 'email']);
+    
+    print_r($coustomFields);
+    ```
+- select `post` where its `id` is equal 5
+    ```php
+    $post = $db->table('posts')->where('id', '=', 5)->select();
+    // or
+    $post = $db->where('id', 5)->select();
+    // Custom fields
+    $post = $db->table('posts')->where('id', 5)->select(['id', 'title', 'body']);
+    ```
+- multi where :
+    ```php
+    $post = $db->table('posts')-
+        >where('vorw', '>', 5)
+        ->where('visetors', '>', 200)
+        ->select();
+    // Custom fields
+     $post = $db->table('posts')
+        ->where('vorw', '>', 5)
+        ->where('visetors', '>', 200)
+        ->select(['id', 'title', 'body']);
+    ```
+    you can use `where` method an infinite :)
+    
+### where types :
+- whereBetween() :
+    ```php
+    $db->->table('posts')
+        ->whereBetween('data', [$start, $end])
+        ->select();
+    ```
+- likeWhere() :
+    ```php
+    $db->->table('users')
+        ->likeWhere('name', 'mohammad')
+        ->select();
+    ```
+- orWhere() :
+    ```php
+    $db->table('posts')
+        ->where('id', 5)
+        ->orWhere('id', 3)
+        ->select(['title', 'body']);
+    ```
+### get first row :
 ```php
-<?php
-$userInformation = [
-	'id'       => 1,
-	'name'     => 'Mohammad',
-	'username' => 'Anzawi',
-	'email'    => 'email@example.com',
-];
+ $db->table('posts')
+        ->where('id', 5)
+        ->orWhere('id', 3)
+        ->first();
+```
+all examples above you can replace `select` with `first` to get only first row selected.
 
-$db->table('users')->insert($userInformation );
+### find method :
+find where `id`
+```php
+$db->table('users')->find(1);
+// SELECT * FROM `users` where `id` = 1
+```
+## insert :
+insert new user to `users` table:
+```php
+$db->table('users')
+    ->insert([
+        'name' => 'mohammad',
+        'email' => 'mohammad@email.com',
+        'password' => 'secret',
+    ]);
+
+```
+insert new post to `posts` table:
+```php
+$db->table('posts')
+    ->insert([
+        'title' => 'my post title',
+        'body' => 'post body and description',
+        // ....
+    ]);
 ```
 
-#### Note
-* $userInformation = [field name  , value]
-
-###update
-suppose you want to update name for Mohammad
-
-* you can update where id or username or any field
-
+## update :
+if we need to update user name to 'ali' where his id is 5 :
 ```php
-<?php
-$newValues  [
-	'name' => 'Ahmed',
-];
-$db->->table('users')->update($newValues, ['id', '=', 1]);
+$db->table('users')
+    ->where('id', 5)
+    ->update([
+        'name' => 'ali'
+    ]);
 ```
-####OR
+update all posts title like (`test`) to (`this is a test post`)
 ```php
-<?php
-$newValues  array(
-	'name' => 'Ahmed',
-);
-$db->table('users')->update($newValues, ['username', '=', 'Mohammad']);
+$db->table('posts')
+    ->likeWhere('title', 'test')
+    ->update([
+        'title' => 'this is a test post'
+    ]);
 ```
-
-####Note
-You can update more than one field in the same array
+## delete :
+delete user has id 105
 ```php
-$newValues  [
-	'name' => 'Ahmed',
-	'username' => 'plapla',
-	'email' => 'pla@plalpa.com',
-	...
-];
-
-$db->table('users')->update($newValues, ['username', '=', 'Mohammad']);
+$db->table('users')
+    ->where('id', 105)
+    ->delete();
 ```
-update method look like this
-update->table('tablename')->update($newVaules = [], $whereCondition = []);
-
-* $newVaules = [field name  , new value]
-* $whereCondition = [field name  , operator  ,  value]
-
-###delete
+delete all posts `voted < 2 ` and `visetors < 200 ` or `id is 2`
 ```php
-<?php
-$db->table('users')->delete(['id', '>=', 1]);
-```
-you can set where condition same update 
-* delete('users', [field name  , operator  ,  value]);
-```php
-<?php
-$db->table('users')->delete(['name', 'LIKE', 'mohammad)]);
-```
-========================
-
-### Note
-You Can Insert , Update, Delete uses query method
-```php
-<?php
-$db->query("INSERT INTO users (name) VALUES (?)", ['mohammad']);
-
-$db->query("UPDATE  users SET (name =?) WHERE id=1", ['AIi']);
-```
-
-## Get First X number Rows
-methode getFirst accept 3 parameters 
-1- rows number (required) by default 10 if kept empty
-2- where condition (optional)
-```php
-<?php
-
-$db->table('table_name')->getFirst(5, $where);
-```
-
-## Get Last X number Rows
-methode getLast accept 3 parameters 
-1- rows number (required) by default 10 if kept empty
-2- where condition (optional)
-```php
-<?php
-
-$db->table('table_name')->getLast(5, $where);
-```
-=============
-
-## How to user returned data
-```php
-$allUsers = $db->query("SELECT * FROM table_name")->results();
-
-foreach($allUsers as $singleUser) {
-	echo $singleUser->name;
-	echo "<br>";
-	echo $singleUser->username;
-}
-
-// name and username in example are fields from table
-```
-if you want to featch as array 
-go to line 102 replace PDO::FETCH_OBJ ->  to -> PDO::FETCH_ASSOC
-## To Get Rows Count
-$count = $db->count();
-echo $count;
-## To Show if there any errors
-```php
-$error = $db->error();
-if(!$error) {
-	echo "No Errors";
-} else {
-	echo "There is error";
-}
-```
-####NOTE:
-all methods return false if any error happen and true if all thing allright . except query if no error return an array
-so you can do something like this:
-```php
-<?php 
-// delete
-if($db->table('users')->delete(['id', '>=', 1])) {
-	echo "Deleted Successfully";
-} else {
-	echo "error Delete";
-}
-
-// insert
-if($db->table('users')->insert(['name' => 'pla pla'])) {
-	echo "Inserted Successfully";
-} else {
-	echo "error Insert";
-}
-
-// update 
-if($db->table('users')->update(['name' => 'pla pla'])) {
-	echo "Updated Successfully";
-} else {
-	echo "error Update";
-}
-
-// get data
-if($users = $db->table('users')->query("select * from users")->results()) {
-	print_r($users);
-} else {
-	echo "error Select From table";
+$db->table('posts')
+    ->where('vote', "<", 2)
+    ->where('visetors', '<', 200)
+    ->orWhere('id', 2)
+    ->delete();
 ```
 
 
-# NEW : Data Definition Language (DDL) :
+--------------------------------
+
+# Data Definition Language (DDL) :
 
 ### Create Table : 
 
@@ -251,12 +214,13 @@ SO the first one is a column type and other well be Constraints
 ### Default Value
 
 to set defualt value type :
+```php
 'number' => 'int|unsigned|default:222';
 'name' => 'int|unsigned|default:hello-this-a-default-value';
 
 // note : the charecter (-) replaced with white space
-
-### Full Exable :
+```
+### Full Example :
 ```php
 $db = DB::get();
 
@@ -271,71 +235,87 @@ $schema = [
 $db->table('users')->schema($schema)->create();
 
 ```
-#ADD Column :
+# ADD Column :
 ```php
-$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('target_table')->alterSchema('condetions is array')->alter();
 $db->table('table')->alterSchema(['add', 'column_name', 'type'])->alter();
 ```
-####EX:
+#### EX:
 ```php
 $db->table('users')->alterSchema(['add', 'last_login', 'date'])->alter();
 ```
 
-#RENAME Column :
+# RENAME Column :
 ```php
-$db->table('target_table')->alterCchema('condetions is array')->alter();
+$db->table('target_table')->alterSchema('condetions is array')->alter();
 $db->table('table')->alterSchema(['rename', 'column_name', 'new_column_name' ,'type'])->alter();
 ```
-####EX:
+#### EX:
 ```php
 $db->table('users')->alterSchema(['rename', 'last_login', 'last_session', 'date'])->alter();
 ```
 
-#EDITE Column  type:
+# EDIT Column  type:
 ```php
 $db->table('table')->alterSchema(['modify', 'column_name', 'new_type'])->alter();
 ```
-####EX:
+#### EX:
 ```php
 $db->table('users')->alterSchema(['modify', 'full_name', 'text'])->alter();
 ```
 
-#DROP Column :
+# DROP Column :
 ```php
 $db->table('table')->alterSchema(['drop', 'column_name'])->alter();
 ```
-####EX:
+#### EX:
 ```php
 $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 ```
 
-###THATS IT :) 
 
-###I HOPE THIE HELP YOU.
+# Advanced Usage
+ - `COMING SOON`
+
+### THATS IT :) 
+
+### I HOPE THIE HELP YOU.
 
 =============================
-#Change Log
+# Change Log
+#### 2.0.0
+* ADD : supports multi `drivers`
+    * mysql
+    * PostgreSQL
+    * sqlite
+    * msSql
+    * sybase
+    * Oracle Call Interface (OCI)
+* ADD : multi where
+* ADD : type of where
+* rebuilt 80% of methods
+* change License terms
+#### 1.1.0
 
-# 1.1.0
 * ADD Some Data Definition Language (DDL) functions.
-** ADD Create New Table 
-** ADD Drop Table
-** ADD Alter Table
-*** ADD Rename Column
-*** Change Column Name
-*** Drop Column
+  * ADD Create New Table 
+  * ADD Drop Table
+  * ADD Alter Table
+    * ADD new Column
+    * Change Column Name
+    * Drop Column
+    * Rename Column
 
-# 1.0.1
-* FIX first method -> to compatible with PHP V 5.3.*
+#### 1.0.1
+* FIX first method -> to compatible with PHP V +5.3.0
 
-# 1.0.0
+#### 1.0.0
 * First Release
 
 
 =============================
-#License
-### No License For This Class You are Free To Use it :)
-
+# License
+### MIT
 
 
 
