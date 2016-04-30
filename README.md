@@ -182,7 +182,24 @@ $db->table('posts')
     ->delete();
 ```
 
+### limit :
+get first 10 rows
+```php
+$db->table('posts')
+    ->where('vote',">", 3)
+    ->limit(10)
+    ->select();
+```
 
+### limit :
+get first 10 rows offset 3
+```php
+$db->table('posts')
+    ->where('vote',">", 3)
+    ->limit(10)
+    ->offset(3)
+    ->select();
+```
 --------------------------------
 
 # Data Definition Language (DDL) :
@@ -239,7 +256,7 @@ $schema = [
 	'id' => 'increments',
 	'username' => 'string:100|not_null',
 	'full_name' => 'string:255|defualt:no-name',
-	'joind' => 'timestamps',
+	'joined' => 'timestamp',
 	'user_email' => 'string:100|not_null',
 ];
 
@@ -304,6 +321,10 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     * Oracle Call Interface (OCI)
 * ADD : multi where
 * ADD : type of where
+* ADD : show query
+* FIX : default constraint
+* ADD : limit function
+* ADD : offset function
 * rebuilt 80% of methods
 * change License terms
 #### 1.1.0
