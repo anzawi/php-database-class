@@ -200,6 +200,22 @@ $db->table('posts')
     ->offset(3)
     ->select();
 ```
+
+### in :
+
+```php
+$db->table('posts')
+    ->in('id', [1, 2, 3, 4, 5])
+    ->select();
+```
+
+### notIn :
+
+```php
+$db->table('posts')
+    ->notIn('id', [1, 2, 3, 4, 5])
+    ->select();
+```
 --------------------------------
 
 # Data Definition Language (DDL) :
