@@ -191,7 +191,7 @@ $db->table('posts')
     ->select();
 ```
 
-### limit :
+### offset :
 get first 10 rows offset 3
 ```php
 $db->table('posts')
