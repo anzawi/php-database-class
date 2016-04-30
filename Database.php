@@ -410,6 +410,7 @@ class Database
     	if(count($values))
     	{
     		$this->_query .= " $field IN (" . implode(",", $values) . ")";
+            $this->_where = "AND";
     	}
     }
 
@@ -424,6 +425,7 @@ class Database
     	if(count($values))
     	{
     		$this->_query .= " $field NOT IN (" . implode(",", $values) . ")";
+            $this->_where = "AND";
     	}
     }
 
