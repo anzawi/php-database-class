@@ -47,7 +47,7 @@ return [
 		'mysql' => [
 				'driver' => 'mysql',
 				'host_name' => 'localhost',
-				'db_name' => 'logaty',
+				'db_name' => 'booking',
 				'db_user' => 'homestead',
 				'db_password' => 'secret'
 		],

@@ -26,7 +26,8 @@ class Database
         $_count,
         $_error = false,
         $_schema,
-        $_where = "WHERE";
+        $_where = "WHERE",
+        $_sql;
 
     protected $_table;
 
@@ -145,7 +146,6 @@ class Database
      */
     public function query($sql, $params = [])
     {
-        //die($sql);
         $this->_query = "";
         $this->_where = "WHERE";
         // set _erroe. true to that if they can not be false for this function to work properly, this function makes the value of _error false if there is no implementation of the sentence correctly
@@ -168,8 +168,13 @@ class Database
         }
         // check if sql statement executed
         if($query->execute()) {
+            $this->_sql = $query;
             // set _results = data comes
-            $this->_results = $query->fetchAll(config('fetch'));
+            try
+            {
+                $this->_results = $query->fetchAll(\config('fetch'));
+            }
+            catch(\PDOException $e){}
             // set _count = count rows comes
             $this->_count = $query->rowCount();
         } else {
@@ -275,6 +280,7 @@ class Database
         $sql = "SELECT " . implode(', ', $fields)
             . " FROM {$this->_table} {$this->_query}";
 
+        $this->_query = $sql;
         return $this->query($sql)->results();
     }
 
@@ -302,7 +308,7 @@ class Database
     {
         $find = $this->where("id", $id)
             ->select();
-     
+
         $this->_query = '';
         $this->_where = "WHERE";
         return isset($find[0]) ? $find[0] : [];
@@ -318,7 +324,7 @@ class Database
     public function where($field, $operator, $value = false)
     {
     	/**
-    	 * if $value is not set then set $operator to (=) and 
+    	 * if $value is not set then set $operator to (=) and
     	 * $value to $operator
     	 */
         if($value === false)
@@ -327,22 +333,25 @@ class Database
             $operator = "=";
         }
 
-        $this->_query .= " $this->_where $field $operator '$value'";
+        if(!is_numeric($value))
+            $value = "'$value'";
+
+        $this->_query .= " $this->_where $field $operator $value";
         $this->_where = "AND";
         return $this;
     }
 
     /**
-     * between condition 
+     * between condition
      * @param  string $field  table field name
      * @param  arrya $values ['from', 'to']
      * @return object        this class
      */
     public function whereBetween($field, $values = [])
     {
-    	if(count($value))
+    	if(count($values))
     	{
-    		$this->_query .= 
+    		$this->_query .=
     			" $this->_where $field BETWEEN '$values[0]' and '$values[1]'";
        		$this->_where = "AND";
     	}
@@ -355,7 +364,7 @@ class Database
      * @param  string $field database field name
      * @param  string $value value
      * @return object 	this class
-     */		
+     */
     /**
      * we can do that with where() methode
      * $db->table('test')->where('name', 'LIKE', '%moha%');
@@ -390,7 +399,34 @@ class Database
         return $this;
     }
 
-  
+    /**
+     * [in description]
+     * @param  [type] $field  [description]
+     * @param  array  $values [description]
+     * @return [type]         [description]
+     */
+    public function in($field, $values = [])
+    {
+    	if(count($values))
+    	{
+    		$this->_query .= " $field IN (" . implode(",", $values) . ")";
+    	}
+    }
+
+    /**
+     * [notIn description]
+     * @param  [type] $field  [description]
+     * @param  array  $values [description]
+     * @return [type]         [description]
+     */
+    public function notIn($field, $values = [])
+    {
+    	if(count($values))
+    	{
+    		$this->_query .= " $field NOT IN (" . implode(",", $values) . ")";
+    	}
+    }
+
 	/**
 	 * get first row from query results
 	 * @return array
@@ -402,6 +438,27 @@ class Database
             return $first[0];
 
         return [];
+    }
+
+    /**
+     * [limit description]
+     * @param  [type] $limit [description]
+     * @return [type]        [description]
+     */
+    public function limit($limit)
+    {
+    	$this->_query .= " LIMIT " . (int)$limit;
+    	return $this;
+    }
+    /**
+     * [offset description]
+     * @param  [type] $offset [description]
+     * @return [type]         [description]
+     */
+    public function offset($offset)
+    {
+    	$this->_query .=" OFFSET " .$offset;
+        return $this;
     }
 
     /**
@@ -431,8 +488,14 @@ class Database
     }
 
 
-
-
+    /**
+     * Show last query
+     * @return string
+     */
+    public function showMeQuery()
+    {
+    	return $this->_sql;
+    }
 
 
     // create table
@@ -510,10 +573,11 @@ class Database
                 // ['username' => 'string:255|default:no-name'] convert to username VARCHAR(255) DEFAULT 'no name'
                 if(strpos($constraints, 'default') !== false)
                 {
-                    preg_match("/(:)[A-Za-z0-9]+/", $constraints, $match);
+                    preg_match("/(:)[A-Za-z0-9](.*)+/", $constraints, $match);
+
                     $match[0] = str_replace(':', '', $match[0]);
                     $temp = str_replace('-', ' ', $match[0]);
-                    $constraints = str_replace(":".$match[0] , " '{$temp}' ", $constraints);
+                    $constraints = str_replace(":" . $match[0] , " '{$temp}' ", $constraints);
                 }
 
                 // add key to schema var contains column _type constraints
@@ -536,14 +600,15 @@ class Database
      * @param  string $createStatement its create statement -> i mean you can change it to ->  CREATE :table IF NOT EXIST
      * @return bool
      */
-    public function create($createStatement = "CREATE TABLE :table")
+    public function create($createStatement = "CREATE TABLE :table ")
     {
         $createStatement = str_replace(':table', $this->_table, $createStatement);
+
         try
         {
             $this->_pdo->exec($createStatement . $this->_schema);
         }
-        catch(PDOException $e)
+        catch(\PDOException $e)
         {
             print $e->getMessage();
             return false;
@@ -558,7 +623,7 @@ class Database
         {
             $this->_pdo->exec("DROP TABLE {$this->_table}");
         }
-        catch(PDOException $e)
+        catch(\PDOException $e)
         {
             die($e->getMessage());
         }
@@ -598,7 +663,7 @@ class Database
         {
             $this->_pdo->exec("ALTER TABLE {$this->_table} {$this->_schema}");
         }
-        catch(PDOException $e)
+        catch(\PDOException $e)
         {
             die($e->getMessage());
         }
@@ -628,12 +693,8 @@ class Database
             $this->_schema = "MODIFY {$options[1]} {$options[2]}";
     }
 
-    /**
-     * Custom methods for LOGATY library
-     */
-
-    protected function transWhere($lang)
+    public function showMeSchema()
     {
-
+        return $this->_schema;
     }
 }
