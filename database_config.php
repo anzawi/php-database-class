@@ -47,9 +47,9 @@ return [
 		'mysql' => [
 				'driver' => 'mysql',
 				'host_name' => 'localhost',
-				'db_name' => 'booking',
-				'db_user' => 'homestead',
-				'db_password' => 'secret'
+				'db_name' => 'test',
+				'db_user' => 'root',
+				'db_password' => ''
 		],
 
 		// PostgreSQL
@@ -99,6 +99,12 @@ return [
 				'db_user' => 'database_username',
 				'db_password' => 'database_user_password'
 		]
-	]
+	],
 
+
+	"pagination" => [
+		"no_data_found_message" => "Oops, No Data Found to show ..",
+		"records_per_page"      => 10,
+		"link_query_key"        => "page"
+	]
 ];
