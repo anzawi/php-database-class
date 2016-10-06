@@ -216,6 +216,59 @@ $db->table('posts')
     ->notIn('id', [1, 2, 3, 4, 5])
     ->select();
 ```
+
+
+### paginate : 
+
+to paginate results
+
+paginate($recordsCount = 0)
+$recordsCount => default value take from database_config.php file
+
+```
+"pagination" => [
+		"no_data_found_message" => "Oops, No Data Found to show ..",
+		"records_per_page"      => 10,
+		"link_query_key"        => "page"
+	]
+```
+
+```php
+$db = PHPtricks\Database\Database::connect();
+$results = $db->table("blog")->paginate(15);
+var_dump($results);
+```
+now add to url this string query (?page=2 or 3 or 4 .. etc)
+see (link() method to know how to generate navigation automatically)
+
+### link : 
+ create pagination list to navigate between pages
+ ```php
+ $db = PHPtricks\Database\Database::connect();
+ $db->table("blog")->where("vote", ">", 2)->paginate(5);
+ echo $db->link();
+ ```
+ 
+ ### dataView : 
+ view query results in table
+ we need to create a simple table to view results of query
+ 
+ ```php
+$db = PHPtricks\Database\Database::connect();
+$db->table("blog")->where("vote", ">", 2)->select();
+echo $db->dataView();
+```
+
+## recommended TEST Code : 
+
+```php
+
+$db = PHPtricks\Database\Database::connect();
+$db->table("blog")->paginate();
+echo $db->dataView();
+echo $db->link();
+
+```
 --------------------------------
 
 # Data Definition Language (DDL) :
@@ -327,6 +380,14 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 
 =============================
 # Change Log
+
+### 2.1.0
+* Add : pagination functionality
+* Add : count method
+* Add : dataView method (to display 'selected results' in table)
+* FIX : in() method
+* FIX : notIn() method
+
 #### 2.0.0
 * ADD : supports multi `drivers`
     * mysql
