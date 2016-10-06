@@ -7,18 +7,18 @@ include __DIR__ . "/config_function.php";
 class Database
 {
     /**
-     * @var $_instace type object
+     * @var $_instance object
      * store DB class object to allow one connection with database (deny duplicate)
      * @access private
      */
-    private static $_instace;
+    private static $_instance;
 
     /**
-     * @var $_pdo type object PDO object
-     * @var $_query type string store sql statement
-     * @var $_results type array store sql statement result
-     * @var $_count type int store row count for _results variable
-     * @var $_error type bool if cant fetch sql statement = true otherwise = false
+     * @var $_pdo object PDO object
+     * @var $_query string store sql statement
+     * @var $_results array store sql statement result
+     * @var $_count int store row count for _results variable
+     * @var $_error bool if cant fetch sql statement = true otherwise = false
      */
     private $_pdo,
         $_query = '',
@@ -27,7 +27,8 @@ class Database
         $_error = false,
         $_schema,
         $_where = "WHERE",
-        $_sql;
+        $_sql,
+	    $_colsCount = -1;
 
     protected $_table;
 
@@ -128,18 +129,18 @@ class Database
      */
     public static function connect()
     {
-        if(!isset(self::$_instace)) {
-            self::$_instace = new Database();
+        if(!isset(self::$_instance)) {
+            self::$_instance = new Database();
         }
 
-        return self::$_instace;
+        return self::$_instance;
     }
 
     /**
      * DB::query()
      * check if sql statement is prepare
-     * append value for sql statement if $parame is set
-     * featch results
+     * append value for sql statement if $params is set
+     * fetch results
      * @param string $sql
      * @param array $params
      * @return mixed
@@ -148,7 +149,8 @@ class Database
     {
         $this->_query = "";
         $this->_where = "WHERE";
-        // set _erroe. true to that if they can not be false for this function to work properly, this function makes the value of _error false if there is no implementation of the sentence correctly
+        // set _error. true to that if they can not be false for this function to work properly, this function makes the
+	    // value of _error false if there is no implementation of the sentence correctly
         $this->_error = false;
         // check if sql statement is prepared
         $query = $this->_pdo->prepare($sql);
@@ -301,8 +303,8 @@ class Database
 
     /**
      * find single row from table via id
-     * @param  [type] $id [description]
-     * @return [type]     [description]
+     * @param  int $id [description]
+     * @return array or object (as you choice from config file)  results or empty
      */
     public function find($id)
     {
@@ -378,16 +380,19 @@ class Database
     }
 
 
-    /**
-     * to add OR condition
-     * where() method add (AND) this method add (OR)
-     * @param  [type]  $field    [description]
-     * @param  [type]  $operator [description]
-     * @param  boolean $value    [description]
-     * @return [type]            [description]
-     */
+	/**
+	 * add OR condition to sql statement
+	 * @param  string  $field    field name from table
+	 * @param  string  $operator operator (= , <>, .. etc)
+	 * @param  mix $value    the value
+	 * @return object        this class
+	 */
     public function orWhere($field, $operator, $value = false)
     {
+	    /**
+	     * if $value is not set then set $operator to (=) and
+	     * $value to $operator
+	     */
         if($value === false)
         {
             $value = $operator;
@@ -400,10 +405,10 @@ class Database
     }
 
     /**
-     * [in description]
-     * @param  [type] $field  [description]
-     * @param  array  $values [description]
-     * @return [type]         [description]
+     * add in condition to query
+     * @param  string  $field    field name from table
+     * @param  array $value   the values
+     * @return object        this class
      */
     public function in($field, $values = [])
     {
@@ -412,14 +417,16 @@ class Database
     		$this->_query .= " $this->_where $field IN (" . implode(",", $values) . ")";
             $this->_where = "AND";
     	}
+
+    	return $this;
     }
 
-    /**
-     * [notIn description]
-     * @param  [type] $field  [description]
-     * @param  array  $values [description]
-     * @return [type]         [description]
-     */
+	/**
+	 * add not in condition to query
+	 * @param  string  $field    field name from table
+	 * @param  array $value   the values
+	 * @return object        this class
+	 */
     public function notIn($field, $values = [])
     {
     	if(count($values))
@@ -427,36 +434,43 @@ class Database
     		$this->_query .= " $this->_where $field NOT IN (" . implode(",", $values) . ")";
             $this->_where = "AND";
     	}
+
+    	return $this;
     }
 
 	/**
 	 * get first row from query results
 	 * @return array
 	 */
-    public function first()
+    public function first($selectNew = true)
     {
-        $first = $this->select();
+    	if($selectNew === true)
+            $first = $this->select();
+	    else
+	    	$first = $this->results();
         if(count($first))
             return $first[0];
 
         return [];
     }
 
-    /**
-     * [limit description]
-     * @param  [type] $limit [description]
-     * @return [type]        [description]
-     */
-    public function limit($limit)
+	/**
+	 * add limit rows to query
+	 * @param int $from
+	 * @param int $to
+	 * @return $this
+	 */
+    public function limit($from = 0, $to = 15)
     {
-    	$this->_query .= " LIMIT " . (int)$limit;
+    	if(is_integer($from) && is_integer($to))
+    	    $this->_query .= " LIMIT {$from}, {$to}";
     	return $this;
     }
-    /**
-     * [offset description]
-     * @param  [type] $offset [description]
-     * @return [type]         [description]
-     */
+
+	/**
+	 * @param $offset
+	 * @return $this
+	 */
     public function offset($offset)
     {
     	$this->_query .=" OFFSET " .$offset;
@@ -499,6 +513,261 @@ class Database
     	return $this->_sql;
     }
 
+	/**
+	 *
+	 * New In V.2.1.0
+	 *
+	 */
+
+	/**
+	 * @sense v.2.1.0
+	 * pagination functionality
+	 * @param int $recordsCount count records per page
+	 * @return array
+	 */
+	/**
+	 * How to Use:
+	 *
+	 * $db = PHPtricks\Database\Database::connect();
+	 * $results = $db->table("blog")->paginate(15);
+	 *
+	 * var_dump($results);
+	 *
+	 * now add to url this string query (?page=2 or 3 or 4 .. etc)
+	 * see (link() method to know how to generate navigation automatically)
+	 */
+	public function paginate($recordsCount = 0)
+	{
+		if($recordsCount === 0)
+			$recordsCount = config("pagination.records_per_page");
+
+		// this method accept one argument must be an integer number .
+		if(!is_integer($recordsCount))
+		{
+			trigger_error("Oops, the records count must be an integer number"
+					. "<br> <p><strong>paginate method</strong> accept one argument must be"
+					." an <strong>Integer Number</strong> ," . gettype($recordsCount) . " given!</p>"
+					. "<br><pre>any question? contact me on team@phptricks.org</pre>", E_USER_ERROR);
+		}
+		// check current page
+		$startFrom = isset($_GET[config("pagination.link_query_key")]) ?
+			($_GET[config("pagination.link_query_key")] - 1) * $recordsCount : 0;
+
+		// get pages count rounded up to the next highest integer
+		$this->_colsCount = ceil(count($this->select()) / $recordsCount);
+
+		// return query results
+		return $this->limit($startFrom, $recordsCount)->select();
+	}
+
+	/**
+	 * view query results in table
+	 * we need to create a simple table to view results of query
+	 * @return string (html)
+	 */
+	/**
+	 * How to Use:
+	 *
+	 * $db = PHPtricks\Database\Database::connect();
+	 * $db->table("blog")->where("vote", ">", 2)->select();
+	 * echo $db->dataView();
+	 */
+	public function dataView()
+	{
+		// get columns count to create the table
+		$colsCount = count($this->first(false));
+		// if no data received so return no data found!
+		if($colsCount <= 0)
+		{
+			return config("pagination.no_data_found_message");
+		}
+		// get Columns name's
+		$colsName = array_keys((array)$this->first(false));
+
+		// init html <table> tag
+		$html = "<table border=1><thead><tr>";
+
+		/**
+		 * create table header
+		 * its contain table columns names
+		 */
+		foreach ($colsName as $colName)
+		{
+			$html .= "<th>";
+			$html .= $colName;
+			$html .= "</th>";
+		}
+
+		// end table header tag and open table body tag
+		$html .= "</tr></thead><tbody>";
+		// loop all results to create the table (tr's and td's)
+		foreach ((array)$this->results() as $row)
+		{
+			$row = (array)$row; // make sure the $row is array and not an object
+			$html .= "<tr>"; // open tr tag
+
+			// loop all columns in row to create <td>'s tags
+			for ($i = 0; $i <= $colsCount + 1; $i++)
+			{
+				$html .= "<td>";
+				$html .= $row[$colsName[$i]]; // get current data from the row
+				$html .= "</td>";
+			}
+			$html .= "</tr>";
+		}
+
+		$html .= "</tbody></table>";
+
+		return $html; // return created table
+	}
+
+	/**
+	 * create pagination list to navigate between pages
+	 * @return string (html)
+	 */
+	/**
+	 * How to Use:
+	 *
+	 * $db = PHPtricks\Database\Database::connect();
+	 * $db->table("blog")->where("vote", ">", 2)->paginate(5);
+	 * echo $db->link();
+	 */
+	public function link()
+	{
+		// get current url
+		$link = $_SERVER['PHP_SELF'];
+
+		// current page
+		$currentPage =
+			(isset($_GET[config("pagination.link_query_key")]) ?
+			$_GET[config("pagination.link_query_key")]
+			: 1);
+		/**
+		 * $html var to store <ul> tag
+		 */
+		$html = '';
+		if($this->_colsCount > 0) // check if columns count is not 0 or less
+		{
+			$operator = $this->checkAndGetUriQuery();
+
+			$html = "<ul class=\"pagination\">";
+			// loop to get all pages
+			for ($i = 1; $i <= $this->_colsCount; $i++)
+			{
+				// we need other pages link only ..
+				if($i == $currentPage)
+				{
+					$html .= "<li>{$i}</li>";
+				}
+				else
+				{
+					$html .= "<li><a href=\"{$link}{$operator}" .
+						config("pagination.link_query_key") .
+						"={$i}\">{$i}</a></li>";
+				}
+			}
+
+			 $html .= "</ul>";
+		}
+
+		return $html;
+	}
+
+	/**
+	 * check if we have a string query in current uri other (pagination key)
+	 * if not so return (?) otherwise we want to reorder a string query to keep other keys
+	 * @return string
+	 */
+	private function checkAndGetUriQuery()
+	{
+		$get = $_GET;
+		// remove pagination key from query string
+		unset($get[config("pagination.link_query_key")]);
+		// init query string and set init value (?)
+		$queryString = "?";
+		// check if we have other pagination key in query string
+		if(count($get))
+		{
+			// reorder query string to keep other keys
+			foreach ($get as $key => $value)
+			{
+				$queryString .= "{$key}" .
+					(!empty($value) ? "=" : "") . $value . "&";
+			}
+
+			return $queryString;
+		}
+
+
+		return "?";
+	}
+
+	/**
+	 * @return int pages count when use paginate() method
+	 */
+	public function pagesCount()
+	{
+		if($this->_colsCount < 0)
+			return null;
+
+		return $this->_colsCount;
+	}
+
+	/**
+	 * get count of rows for last select query
+	 * @return int
+	 */
+	public function count()
+	{
+		return $this->_count;
+	}
+	/**
+	 * Join's
+	 */
+	/**
+	 * make join between tables
+	 * @param string $table
+	 * @param array $condition
+	 * @param string $join
+	 * @return $this
+	 */
+	/**
+	 * How to use :
+	 * $db = PHPtricks\Database\Database::connect();
+	 * $db->table("blog")->join("comments", ["comments.id", "=", blog.id], "left");
+	 *
+	 * sql = SELECT * FROM blog LEFT JOIN comments ON comments.id = blog.id
+	 */
+	public function join($table, $condition = [], $join = '')
+	{
+		// make sure the $condition has 3 indexes (`table_one.field`, operator, `table_tow.field`)
+		if(count($condition) == 3)
+			$this->_query .= strtoupper($join) . // convert $join to upper case (left -> LEFT)
+				" JOIN {$table} ON {$condition[0]} {$condition[1]} {$condition[2]}";
+
+		// that's it now return object from this class
+		return $this;
+	}
+
+	/**
+	 * check if table is exist in database
+	 * @param string $table
+	 * @return bool
+	 */
+	public function tableExist($table = '')
+	{
+		$table = $this->query("SHOW TABLES LIKE '{$table}'")->results();
+
+		if(!is_null($table) && count($table))
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * End Added in V.2.1.0
+	 */
+
 
     // create table
     // alter table [
@@ -527,12 +796,12 @@ class Database
 
     /**
      * set _schema var value
-     * @param  array  $structers the structer od table
+     * @param  array  $structures the structer od table
      * @return object   retrun DB object
      */
-    public function schema($structers = [])
+    public function schema($structures = [])
     {
-        if(count($structers)) // check if isset $structers
+        if(count($structures)) // check if isset $structers
         {
             /**
              * to store columns structers
@@ -540,18 +809,18 @@ class Database
              */
             $schema = [];
 
-            foreach($structers as $column => $options)
+            foreach($structures as $column => $options)
             {
                 $type = $options; // the type is the prototype of column
                 $constraints = ''; // store all constraints for one column
 
-                // check if we have a onstraints
+                // check if we have a constraints
                 if(!strpos($options, '|') === false)
                 {
 
                     $constraints = explode('|', $options); // the separator to constraints is --> | <--
                     $type = $constraints[0]; // the type is first key
-                    unset($constraints[0]); // remove type from onstraints
+                    unset($constraints[0]); // remove type from constraints
                     $constraints = implode(' ', $constraints); // convert constraints to string
                     $constraints = strtr($constraints, [
                         'primary' => 'PRIMARY KEY', // change (primary to PRIMARY KEY -> its valid constraint in sql)
@@ -560,10 +829,10 @@ class Database
                     ]);
                 }
 
-                // checck if type is increments we want to change it to integer and  and add some constraints like primary key ,not null, unsigned and auto increment
+                // check if type is 'increments' we want to change it to integer and add some constraints like primary key ,not null, unsigned and auto increment
                 ($type == 'increments'? $type = "INT UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL": null);
 
-                // check if type of column is string change it to valid sql type (VARCHAR and set lingth)
+                // check if type of column is string change it to valid sql type (VARCHAR and set length)
                 // ['username' => 'string:255'] convert to username VARCHAR(255)
                 if(strpos($type, 'string') !== false)
                 {
@@ -588,7 +857,7 @@ class Database
 
             }
 
-            // set _scema the all columns structure
+            // set _schema the all columns structure
             $this->_schema = '(' . implode(",", $schema) . ')';
 
             return $this; // return DB object
@@ -598,12 +867,24 @@ class Database
     }
 
     /**
-     * this methode to run sql statment and create table
+     * this method to run sql statement and create table
      * @param  string $createStatement its create statement -> i mean you can change it to ->  CREATE :table IF NOT EXIST
      * @return bool
      */
-    public function create($createStatement = "CREATE TABLE :table ")
+    public function create($createStatement = "CREATE TABLE") // you can use (CREATE TABLE IF NOT EXIST)
     {
+    	$createStatement = $createStatement . " :table ";
+	    // check if table is not exist
+	    // by default in (try catch) block we can detect this problem
+	    // but if you want to display a custom error message you can uncomment
+	    // this (if) block and set your error message
+	    /*if($this->tableExist($this->_table))
+	    {
+	    	print ("Oops.. the table {$this->_table} already Exists in "
+			    . config('host_name') . "/" . config("db_name"));
+		    die;
+	    }*/
+
         $createStatement = str_replace(':table', $this->_table, $createStatement);
 
         try
@@ -633,9 +914,9 @@ class Database
         return true;
     }
 
-// "ALTER TABLE ADD COULMN (COLUM_NAME TYPE AND CONTRIANTE)"
-// "ALTER TABLE DROP COULMN COLUM_NAME"
-// "ALTER TABLE RENAME COULMN (COLUM_NAME TYPE AND CONTRIANTE)"
+// "ALTER TABLE ADD COLUMN (COLUMN_NAME TYPE AND CONSTRAINT)"
+// "ALTER TABLE DROP COLUMN COLUMN_NAME"
+// "ALTER TABLE RENAME COLUMN (COLUMN_NAME TYPE AND CONSTRAINT)"
 //
 // table('table')->alterSchema(['add', 'column_name', 'type'])->alter();
 // table('table')->alterSchema(['drop', 'column_name'])->alter();
@@ -661,6 +942,16 @@ class Database
 
     public function alter()
     {
+	    // check if table is not exist
+	    // by default in (try catch) block we can detect this problem
+	    // but if you want to display a custom error message you can uncomment
+	    // this (if) block and set your error message
+	    /*if(!$this->tableExist($this->_table))
+	    {
+	    	print ("Oops.. cant alter table {$this->_table} because is not Exists in "
+			    . config('host_name') . "/" . config("db_name"));
+		    die;
+	    }*/
         try
         {
             $this->_pdo->exec("ALTER TABLE {$this->_table} {$this->_schema}");
