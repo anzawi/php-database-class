@@ -241,9 +241,8 @@ see (link() method to know how to generate navigation automatically)
  $db->table("blog")->where("vote", ">", 2)->paginate(5);
  echo $db->link();
  ```
- 
- 
-  ## dataView : 
+
+## dataView : 
  view query results in table
  we need to create a simple table to view results of query
  
