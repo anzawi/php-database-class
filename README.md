@@ -8,13 +8,6 @@ A database class which uses the PDO extension.
 
 If you have any issue please open isseu to fix it.
 
-* To Arabic latst version go to : http:/www.phptricks.org/PDO-class-v-2-xp  : للشرح باللغة العربية للاصدار  الحالي توجه الى
-
-
-* To Arabic v-2 go to : http://www.phptricks.org/PDO-class-v-2  : للشرح باللغة العربية للاصدار 2 توجه الى
-
-* To Arabic v-1 go to : http://www.phptricks.org/PDO-class  : للشرح بالغة العربية للاصدار 1 توجه الى
-
 
 ### install via composer 
 ```json
@@ -65,9 +58,9 @@ If you have any issue please open isseu to fix it.
     
     print_r($allData);
     ```
-- select `id`, `name`, `email` fro all users from `users` table
+- select `id`, `name`, `email` for all users from `users` table
     ```php
-    $coustomFields = $db->table('users')->select(['id', 'name', 'email']);
+    $coustomFields = $db->table('users')->select(['id', 'name', 'email'])->select();
     
     print_r($coustomFields);
     ```
@@ -249,7 +242,8 @@ see (link() method to know how to generate navigation automatically)
  echo $db->link();
  ```
  
- ### dataView : 
+ 
+  ## dataView : 
  view query results in table
  we need to create a simple table to view results of query
  
