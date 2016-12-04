@@ -56,3 +56,12 @@ function config($path = "")
 
 	return $config['default'];
 }
+
+
+/**
+ *
+ */
+function getColumnName($columnName = '')
+{
+	return ucwords(str_replace("_", "", implode(" ", preg_split('/(?=[A-Z]|_)/', $columnName))));
+}

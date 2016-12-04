@@ -6,9 +6,14 @@ A database class which uses the PDO extension.
 * this speeds up to use the database and reduces the load on the server.
 * supports many drivers (mysql, sqlite, PostgreSQL, mssql, sybase, Oracle Call Interface -oci-)
 
-If you have any issue please open isseu to fix it.
+If you have any issue please open issue to fix it.
 
+```
+please note: this version (3.0.0) not fully testing,
+SO any problem or issue - open new issue to fix it.
 
+any suggestions would you like added or modified write to us at team@phptricks.org
+```
 ### install via composer 
 ```json
 {
@@ -31,7 +36,7 @@ If you have any issue please open isseu to fix it.
  - default : Default Database Connection Name (driver) by default (mysql)
  - connections : Database Connections (drivers).
  
-###### <<<<<< set database conection information..!  >>>>>>
+###### <<<<<< set database connection information..!  >>>>>>
 
 ------------------
 # how to use :
@@ -52,17 +57,38 @@ If you have any issue please open isseu to fix it.
 # how it work (methods):
 
 ## select() :
+
+very important (select, first, find, paginate) methods __return Database object__
+you can use ->results(); to convert to array or object as you config a "fetch"
+
  - select all data from `test` table :
     ```php
     $allData = $db->table('test')->select();
     
-    print_r($allData);
+    var_dump($allData);
+ 
+    // try 
+    var_dump($allData->results()); // but you cant use any more methods
     ```
 - select `id`, `name`, `email` for all users from `users` table
     ```php
     $coustomFields = $db->table('users')->select(['id', 'name', 'email'])->select();
     
-    print_r($coustomFields);
+    var_dump($coustomFields);
+    
+  // if configure to return object
+    echo $coustomFields->name;
+    echo $coustomFields->email;
+  
+  // if configure to return array
+      echo $coustomFields['name'];
+      echo $coustomFields['email'];
+    
+    // or yo can foreach the returned values
+    foreach($coustomFields as $fields)
+    {
+      // ...
+    }
     ```
 - select `post` where its `id` is equal 5
     ```php
@@ -115,13 +141,23 @@ If you have any issue please open isseu to fix it.
 ```
 all examples above you can replace `select` with `first` to get only first row selected.
 
-### find method :
+### find($id = 0) method :
 find where `id`
 ```php
 $db->table('users')->find(1);
 // SELECT * FROM `users` where `id` = 1
 ```
-## insert :
+please note : change $_idColumn variable to id name in table
+if the table have no id set it to null.
+you can user idName() method or edit from Database class file direct
+
+### setIdName($id = id)
+change id column name | by default is id
+ ```php
+ $db->table('test')->idName('id_name');
+ ```
+
+## insert($values = []) :
 insert new user to `users` table:
 ```php
 $db->table('users')
@@ -142,7 +178,7 @@ $db->table('posts')
     ]);
 ```
 
-## update :
+## update($values = []) :
 if we need to update user name to 'ali' where his id is 5 :
 ```php
 $db->table('users')
@@ -159,12 +195,83 @@ $db->table('posts')
         'title' => 'this is a test post'
     ]);
 ```
+## save()
+if you select row and you want to update direct
+
+is this example we configure "fetch" to object
+
+```php
+use PHPtricks\Database;
+$db = Database::connect();
+$user = $db->table('users')->find('1');
+$user->name = 'Mohammad';
+$user->email = team@phptricks.org;
+$user->save();
+```
+is this example we configure "fetch" to array
+
+```php
+use PHPtricks\Database;
+$db = Database::connect();
+$user = $db->table('users')->find('1');
+$user['name'] = 'Mohammad';
+$user['email'] = team@phptricks.org;
+$user->save();
+```
+but you cant use __save__ with multi rows
+
+WRONG WAY :
+```php
+    $multiUsers = $db->table('users')
+        ->where('name', 'mohammad')
+        ->select();
+    
+    $multiUsers->name = 'Mohhamed'; // ERROR
+    $multiUsers->save(); // ERROR
+```
+
+RIGHT WAY :
+```php
+    $multiUsers = $db->table('users')
+        ->where('name', 'mohammad')
+        ->select();
+    
+    foreach($multiUsers as $user)
+    {
+        $user->name = 'Mohhamed';
+        $user->save();
+    }
+```
+
 ## delete :
 delete user has id 105
 ```php
 $db->table('users')
     ->where('id', 105)
     ->delete();
+
+// or
+$db->table('users')->find(105)->delete();
+
+// or 
+$user = $db->table('users')->find(105);
+
+if($user->active === 0)
+{
+    $user->delete();
+}
+
+// or
+
+$allUsers = $db->table('users')->select();
+
+foreach($allUsers as $user)
+{
+    if($user->active === 0)
+    {
+        $user->delete();
+    }
+}
 ```
 delete all posts `voted < 2 ` and `visetors < 200 ` or `id is 2`
 ```php
@@ -173,12 +280,21 @@ $db->table('posts')
     ->where('visetors', '<', 200)
     ->orWhere('id', 2)
     ->delete();
+    
+// or 
+
+$unnessoryPosts = $db->table('posts')
+                      ->where('vote', "<", 2)
+                      ->where('visetors', '<', 200)
+                      ->orWhere('id', 2);
+                      
+$unnessoryPosts->delete();
 ```
 
 ### limit :
 get first 10 rows
 ```php
-$db->table('posts')
+$justTenRows = $db->table('posts')
     ->where('vote',">", 3)
     ->limit(10)
     ->select();
@@ -230,16 +346,21 @@ $recordsCount => default value take from database_config.php file
 $db = PHPtricks\Database\Database::connect();
 $results = $db->table("blog")->paginate(15);
 var_dump($results);
+
+// to array or object
+var_dump($results->results());
 ```
 now add to url this string query (?page=2 or 3 or 4 .. etc)
 see (link() method to know how to generate navigation automatically)
 
 ### link : 
  create pagination list to navigate between pages
+ * compatible with bootstrap and foundation frameworks
+ 
  ```php
  $db = PHPtricks\Database\Database::connect();
- $db->table("blog")->where("vote", ">", 2)->paginate(5);
- echo $db->link();
+ $posts = $db->table("blog")->where("vote", ">", 2)->paginate(5);
+ echo $posts->link();
  ```
 
 ## dataView : 
@@ -248,8 +369,8 @@ see (link() method to know how to generate navigation automatically)
  
  ```php
 $db = PHPtricks\Database\Database::connect();
-$db->table("blog")->where("vote", ">", 2)->select();
-echo $db->dataView();
+$data = $db->table("blog")->where("vote", ">", 2)->select();
+echo $data->dataView();
 ```
 
 ## recommended TEST Code : 
@@ -257,9 +378,9 @@ echo $db->dataView();
 ```php
 
 $db = PHPtricks\Database\Database::connect();
-$db->table("blog")->paginate();
-echo $db->dataView();
-echo $db->link();
+$posts = $db->table("blog")->paginate();
+echo $posts->dataView();
+echo $posts->link();
 
 ```
 --------------------------------
@@ -373,6 +494,14 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 
 =============================
 # Change Log
+
+### 3.0.0
+* ADD    : direct update functionality
+* FIX    : dataView method with first method
+* MODIFY : methods chaining technique
+    * select, first, find, paginate NOW return Database Object
+    * but you can use results as array or object
+    * any time you can add ->results() to convert to array or object
 
 ### 2.1.0
 * Add : pagination functionality

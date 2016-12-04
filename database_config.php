@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'fetch' => PDO::FETCH_OBJ, // for array -> PDO::FETCH_ASSOC
+    'fetch' => PDO::FETCH_OBJ, // for array -> PDO::FETCH_ASSOC,
 
     /*
     |--------------------------------------------------------------------------
@@ -48,8 +48,8 @@ return [
 				'driver' => 'mysql',
 				'host_name' => 'localhost',
 				'db_name' => 'test',
-				'db_user' => 'root',
-				'db_password' => ''
+				'db_user' => 'homestead',
+				'db_password' => 'secret'
 		],
 
 		// PostgreSQL

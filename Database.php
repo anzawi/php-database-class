@@ -1,10 +1,26 @@
 <?php
 
+/**
+ * please don't remove this comment block
+ *
+ * @author phptricks Team - Mohammad Anzawi
+ * @author_uri http://phptricks.org
+ * @uri https://github.com/anzawi/php-database-class
+ * @version 3.0.0
+ * @licence MIT -> https://opensource.org/licenses/MIT
+ * @package PHPtricks\Database
+ */
+
 namespace PHPtricks\Database;
 
+// include config() function file
 include __DIR__ . "/config_function.php";
 
-class Database
+/**
+ * Class Database
+ * @package PHPtricks\Database
+ */
+class Database implements \IteratorAggregate, \ArrayAccess
 {
     /**
      * @var $_instance object
@@ -13,37 +29,117 @@ class Database
      */
     private static $_instance;
 
-    /**
-     * @var $_pdo object PDO object
-     * @var $_query string store sql statement
-     * @var $_results array store sql statement result
-     * @var $_count int store row count for _results variable
-     * @var $_error bool if cant fetch sql statement = true otherwise = false
-     */
-    private $_pdo,
+    private
+	    /**
+	     *  @var $_pdo object PDO object
+	     */
+	    $_pdo,
+	    /**
+	     *  @var $_query string store sql statement
+	     */
         $_query = '',
-        $_results,
+	    /**
+	     *  @var $_count int store row count for _results variable
+	     */
         $_count,
+	    /**
+	     *  @var $_error bool if cant fetch sql statement = true otherwise = false
+	     */
         $_error = false,
+	    /**
+	     *  @var $_schema string store DDL sql query
+	     */
         $_schema,
+	    /**
+	     *  @var $_where string where type to using by default = WHERE
+	     */
         $_where = "WHERE",
+	    /**
+	     *  @var $_sql string save query string
+	     */
         $_sql,
-	    $_colsCount = -1;
+	    /**
+	     *  @var $_colsCount integer columns count for query results
+	     * using into dataView() method to generate columns
+	     */
+	    $_colsCount = -1,
+	    /**
+	     * @var $_newValues null to save new value to use save() method
+	     */
+		$_newValues = null;
 
-    protected $_table;
 
-    /**
-     * DB::__construct()
-     * Connect with database
-     * @access private
-     * @return void
-     */
-    protected function __construct()
+    protected
+	    /**
+	     * @var $_table string current table name
+	     */
+	    $_table,
+	    /**
+	     * @var $_results array store sql statement result
+	     */
+	    $_results,
+	    /**
+	     * @var $_idColumn string|null id columns name for current table by default is id
+	     */
+	    $_idColumn = "id";
+
+	/**
+	 * Database constructor.
+	 * @param array $data query results if exists
+	 * @param array $info store current table name and id columns name
+	 *
+	 * DON'T pass parameters to __construct.
+	 */
+    protected function __construct($data = [], $info = [])
     {
-        call_user_func_array([$this, \config()], [null]);
+	    // class correct method as database driver selected in config file
+	    call_user_func_array([$this, \config()], [null]);
+
+	    // check if data is sent
+	    if($data)
+	    {
+		    // set id ,table name and results after that return sent data
+		    $this->_idColumn = $info['id'];
+		    $this->_table = $info['table'];
+		    return $this->_results = $data;
+	    }
     }
 
-    protected function mysql($null)
+	/**
+	 * @param $prop
+	 * @return mixed
+	 */
+    public function __get($prop)
+    {
+	    return isset($this->_results->$prop) ? $this->_results->$prop : null;
+    }
+
+    public function __set($prop, $value)
+    {
+		if (isset($this->_results->$prop))
+	    {
+		    if(!is_null($this->_newValues))
+		        $this->_newValues->$prop = $value;
+		    else
+		    {
+			    $this->_newValues = new \stdClass();
+			    $this->_newValues->$prop = $value;
+		    }
+	    }
+    }
+
+    // foreach results
+	public function getIterator()
+	{
+		$o = new \ArrayObject($this->_results);
+		return $o->getIterator();
+	}
+
+	/**
+	 * Connect database with mysql driver
+	 * @param $null
+	 */
+	protected function mysql($null)
     {
         try
         {
@@ -55,7 +151,10 @@ class Database
             die($e->getMessage());
         }
     }
-
+	/**
+	 * Connect database with sqlite driver
+	 * @param $null
+	 */
     protected function sqlite($null)
     {
         try
@@ -68,7 +167,10 @@ class Database
         }
     }
 
-
+	/**
+	 * Connect database with pgsql driver
+	 * @param $null
+	 */
     protected function pgsql($null)
     {
         try
@@ -82,7 +184,10 @@ class Database
         }
     }
 
-
+	/**
+	 * Connect database with mssql driver
+	 * @param $null
+	 */
     protected function mssql($null)
     {
         try
@@ -96,6 +201,10 @@ class Database
         }
     }
 
+	/**
+	 * Connect database with sybase driver
+	 * @param $null
+	 */
     protected function sybase($null)
     {
         try
@@ -109,7 +218,10 @@ class Database
         }
     }
 
-
+	/**
+	 * Connect database with oci driver
+	 * @param $null
+	 */
     protected function oci($null)
     {
         try{
@@ -129,6 +241,10 @@ class Database
      */
     public static function connect()
     {
+	    // do deny duplicate connection
+	    // check if $_instance is null or not
+	    // if null so connect database
+	    // otherwise return current connection object
         if(!isset(self::$_instance)) {
             self::$_instance = new Database();
         }
@@ -168,21 +284,27 @@ class Database
                 $x++;
             }
         }
+
         // check if sql statement executed
-        if($query->execute()) {
-            $this->_sql = $query;
-            // set _results = data comes
-            try
-            {
-                $this->_results = $query->fetchAll(\config('fetch'));
-            }
-            catch(\PDOException $e){}
-            // set _count = count rows comes
-            $this->_count = $query->rowCount();
-        } else {
-            // set _error = true if sql statement not executed
-            $this->_error = true;
-        }
+	    if($query->execute())
+	    {
+		    try
+		    {
+			    $this->_results = $query->fetchAll(\config('fetch'));
+		    }
+		    catch (\PDOException $e) {}
+
+		    $this->_sql = $query;
+		    // set _results = data comes
+
+
+		    // set _count = count rows comes
+		    $this->_count = $query->rowCount();
+
+	    }
+	    else
+	    	$this->_error = true;
+
 
         return $this;
     }
@@ -246,14 +368,15 @@ class Database
      */
     public function update($values = [])
     {
+
         /**
          * @var $set type string
          * store update value
-         * @example "colomn = value"
+         * @example "column = value"
          */
         $set = ''; // initialize $set
         $x = 1;
-        // initialize feilds and values
+        // initialize fields and values
         foreach($values as $i => $row) {
             $set .= "{$i} = ?";
             // add comma between values
@@ -272,18 +395,43 @@ class Database
         return false;
     }
 
+    public function save()
+    {
+	    $x = 1;
+	    $this->_query = "WHERE";
+	    foreach($this->results() as $i => $row)
+	    {
+		    $this->_query .= " {$i} = {$row}";
+		    // add comma between values
+		    if($x < count((array)$this->results())) {
+			    $this->_query .= " AND";
+		    }
+
+		    $x++;
+	    }
+	    return $this->update((array)$this->getNewValues());
+    }
+
     /**
      * select from database
      * @param  array  $fields fields we need to select
-     * @return array  result of select
+     * @return Database result of select as Database object
      */
     public function select($fields = ['*'])
     {
+	    if($fields != ['*'] && !is_null($this->_idColumn))
+	    {
+			if(!in_array($this->_idColumn, $fields))
+			{
+				$fields[$this->_idColumn];
+			}
+	    }
+
         $sql = "SELECT " . implode(', ', $fields)
             . " FROM {$this->_table} {$this->_query}";
 
         $this->_query = $sql;
-        return $this->query($sql)->results();
+        return new Database($this->query($sql)->results(), ['table' => $this->_table, 'id' => $this->_idColumn]);
     }
 
     /**
@@ -292,28 +440,53 @@ class Database
      */
     public function delete()
     {
-        $sql = "DELETE FROM $this->_table " . $this->_query;
-        $delete = $this->query($sql);
+	    if($this->count() == 1)
+	    {
+		    return $this->remove($this->_results);
+	    }
 
-        if($delete) return true;
+	    for($i = 0; $this->count() > $i; $i++)
+	    {
+		    $this->remove($this->_results[$i]);
+	    }
 
-        $this->_error = true;
-        return false;
+	    return true;
     }
 
+    private function remove($data)
+    {
+	    $this->_where = "WHERE";
+	    $x = 1;
+	    foreach($data as $i => $row)
+	    {
+		    $this->_where .= " {$i} = {$row}";
+		    // add comma between values
+		    if($x < count((array)$data)) {
+			    $this->_where .= " AND";
+		    }
+		    $x++;
+	    }
+
+	    $sql = "DELETE FROM $this->_table " . $this->_where;
+	    return $this->query($sql);
+    }
     /**
      * find single row from table via id
      * @param  int $id [description]
-     * @return array or object (as you choice from config file)  results or empty
+     * @return Database or object (as you choice from config file)  results or empty
      */
     public function find($id)
     {
-        $find = $this->where("id", $id)
-            ->select();
+        $result = $this->where($this->_idColumn, $id)
+            ->first()->results();
 
-        $this->_query = '';
-        $this->_where = "WHERE";
-        return isset($find[0]) ? $find[0] : [];
+
+	    if(count((array)$result))
+	    {
+		    return new Database($result, ['id' => $this->_idColumn, 'table' => $this->_table]);
+	    }
+
+	    return new Database([], ['id' => $this->_idColumn, 'table' => $this->_table]);
     }
 
     /**
@@ -440,19 +613,31 @@ class Database
 
 	/**
 	 * get first row from query results
-	 * @return array
+	 * @return Database
 	 */
-    public function first($selectNew = true)
-    {
-    	if($selectNew === true)
-            $first = $this->select();
-	    else
-	    	$first = $this->results();
-        if(count($first))
-            return $first[0];
 
-        return [];
-    }
+	public function first()
+	{
+		$results = $this->select()->results();
+
+		if(count((array)$results))
+		{
+			return new Database($results[0], ['table' => $this->_table, 'id' => $this->_idColumn]);
+		}
+		return new Database([], ['table' => $this->_table, 'id' => $this->_idColumn]);
+	}
+
+	public function firstRecord()
+	{
+		$results = (array)$this->_results;
+
+		if(count($results))
+		{
+			return isset($results[0]) ? $results[0] : $results;
+		}
+
+		return [];
+	}
 
 	/**
 	 * add limit rows to query
@@ -496,6 +681,17 @@ class Database
     {
         $this->_table = $table;
         return $this;
+    }
+
+	/**
+	 * change id columns name
+	 * @param string $idName
+	 */
+    public function idName($idName = "id")
+    {
+	    $this->_idColumn = $idName;
+
+	    return $this;
     }
 
     public function results()
@@ -546,7 +742,7 @@ class Database
 		{
 			trigger_error("Oops, the records count must be an integer number"
 					. "<br> <p><strong>paginate method</strong> accept one argument must be"
-					." an <strong>Integer Number</strong> ," . gettype($recordsCount) . " given!</p>"
+					." an <strong>Integer Number</strong> , " . gettype($recordsCount) . " given!</p>"
 					. "<br><pre>any question? contact me on team@phptricks.org</pre>", E_USER_ERROR);
 		}
 		// check current page
@@ -554,7 +750,7 @@ class Database
 			($_GET[config("pagination.link_query_key")] - 1) * $recordsCount : 0;
 
 		// get pages count rounded up to the next highest integer
-		$this->_colsCount = ceil(count($this->select()) / $recordsCount);
+		$this->_colsCount = ceil(count($this->select()->results()) / $recordsCount);
 
 		// return query results
 		return $this->limit($startFrom, $recordsCount)->select();
@@ -575,14 +771,18 @@ class Database
 	public function dataView()
 	{
 		// get columns count to create the table
-		$colsCount = count($this->first(false));
+		$colsCount = count($this->firstRecord());
 		// if no data received so return no data found!
 		if($colsCount <= 0)
 		{
 			return config("pagination.no_data_found_message");
 		}
+
+		// to fix for counter -> on array we want to counter from columns count -1
+		// on object we want the records count
+		if(is_array($this->_results) && isset($this->_results[0]) && is_array($this->_results[0])) $colsCount -= 1;
 		// get Columns name's
-		$colsName = array_keys((array)$this->first(false));
+		$colsName = array_keys((array)$this->firstRecord());
 
 		// init html <table> tag
 		$html = "<table border=1><thead><tr>";
@@ -594,26 +794,43 @@ class Database
 		foreach ($colsName as $colName)
 		{
 			$html .= "<th>";
-			$html .= $colName;
+			// get column name
+			/**
+			 * the getColumnName() function define in (config_function.php) file
+			 * this function replace (_) to space for example (column_name -> Column Name)
+			 * of separate words (columnName -> Column Name)
+			 */
+			$html .= getColumnName($colName);
 			$html .= "</th>";
 		}
 
 		// end table header tag and open table body tag
 		$html .= "</tr></thead><tbody>";
+
 		// loop all results to create the table (tr's and td's)
 		foreach ((array)$this->results() as $row)
 		{
 			$row = (array)$row; // make sure the $row is array and not an object
-			$html .= "<tr>"; // open tr tag
 
-			// loop all columns in row to create <td>'s tags
-			for ($i = 0; $i <= $colsCount + 1; $i++)
+			if(count($row) > 1)
+			{
+				$html .= "<tr>"; // open tr tag
+				// loop all columns in row to create <td>'s tags
+				for ($i = 0; $i <= $colsCount; $i++)
+				{
+					$html .= "<td>";
+					$html .= $row[$colsName[$i]]; // get current data from the row
+					$html .= "</td>";
+				}
+
+				$html .= "</tr>";
+			}
+			else // first method is called not select
 			{
 				$html .= "<td>";
-				$html .= $row[$colsName[$i]]; // get current data from the row
+				$html .= $row[0]; // get current data from the row
 				$html .= "</td>";
 			}
-			$html .= "</tr>";
 		}
 
 		$html .= "</tbody></table>";
@@ -719,7 +936,8 @@ class Database
 	 */
 	public function count()
 	{
-		return $this->_count;
+		$results = (array)$this->results();
+		return isset($results[0]) ? count($this->_results) : 1;
 	}
 	/**
 	 * Join's
@@ -990,4 +1208,80 @@ class Database
     {
         return $this->_schema;
     }
+
+	/**
+	 * Whether a offset exists
+	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+	 * @param mixed $offset <p>
+	 * An offset to check for.
+	 * </p>
+	 * @return boolean true on success or false on failure.
+	 * </p>
+	 * <p>
+	 * The return value will be casted to boolean if non-boolean was returned.
+	 * @since 5.0.0
+	 */
+	public function offsetExists($offset)
+	{
+		return isset($this->_results[$offset]);
+	}
+
+	/**
+	 * Offset to retrieve
+	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
+	 * @param mixed $offset <p>
+	 * The offset to retrieve.
+	 * </p>
+	 * @return mixed Can return all value types.
+	 * @since 5.0.0
+	 */
+	public function offsetGet($offset)
+	{
+		return $this->_results[$offset];
+	}
+
+	/**
+	 * Offset to set
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 * @param mixed $offset <p>
+	 * The offset to assign the value to.
+	 * </p>
+	 * @param mixed $value <p>
+	 * The value to set.
+	 * </p>
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetSet($offset, $value)
+	{
+		if (isset($this->_results[$offset]))
+		{
+			if(!is_null($this->_newValues))
+				$this->_newValues[$offset] = $value;
+			else
+			{
+				$this->_newValues = [];
+				$this->_newValues[$offset]= $value;
+			}
+		}
+	}
+
+	/**
+	 * Offset to unset
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 * @param mixed $offset <p>
+	 * The offset to unset.
+	 * </p>
+	 * @return void
+	 * @since 5.0.0
+	 */
+	public function offsetUnset($offset)
+	{
+		return null;
+	}
+
+	private function getNewValues()
+	{
+		return $this->_newValues;
+	}
 }

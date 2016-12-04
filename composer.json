@@ -7,6 +7,10 @@
         {
             "name": "mohammad walid anzawi",
             "email": "m.anzawi2013@gmail.com"
+        },
+        {
+            "name": "phptricks Team - Mohammad Anzawi",
+            "email": "team@phptricks.org"
         }
     ],
     "minimum-stability": "stable",
