@@ -72,7 +72,7 @@ you can use ->results(); to convert to array or object as you config a "fetch"
     ```
 - select `id`, `name`, `email` for all users from `users` table
     ```php
-    $coustomFields = $db->table('users')->select(['id', 'name', 'email'])->select();
+    $coustomFields = $db->table('users')->select(['id', 'name', 'email']);
     
     var_dump($coustomFields);
     
