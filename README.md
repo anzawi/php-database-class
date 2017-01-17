@@ -671,9 +671,6 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     * keys() -> to get collection keys
     * toJson() -> to convert results to json format
 * ADD : convert results to json format when use collection as string automaticlly
-* ADD : search() method to ease search in database or filtering results directlly
-
-* ADD : Examples folder -> include some examples to best way to use this Class.
 
 ### 3.0.0
 * ADD    : direct update functionality
