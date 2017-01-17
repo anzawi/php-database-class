@@ -105,10 +105,6 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	    }
     }
 
-    // public function __call($method, $args)
-    // {
-    //     var_dump($this);
-    // }
 
 	/**
 	 * @param $prop
@@ -116,11 +112,6 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	 */
     public function __get($prop)
     {
-        if(!isset($this->__cach[md5($this->_table)]))
-        {
-            return null;
-        }
-
         return isset($this->_results->$prop) ? $this->_results->$prop : null;
     }
 
