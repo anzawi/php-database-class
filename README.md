@@ -661,7 +661,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 =============================
 # Change Log
 ### 3.1.0
-* FIX : Dublocate connection
+* FIX : Duplicate connection
 * ADD : Some methods
     * each() -> to each all collection values
     * map()  -> to map all results
