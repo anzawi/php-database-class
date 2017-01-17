@@ -1,26 +1,9 @@
 <?php
 
-/*function config($name = '')
-{
-	$config = include(dirname(__FILE__) . '/database_config.php');
-
-	if(isset($config[$name]))
-		return $config[$name];
-
-	$configValue = isset($config['connections'][$config['default']][$name]) ?
-			$config['connections'][$config['default']][$name] : null;
-	if($name)
-	{
-		if(!is_null($configValue))
-		{
-			return $configValue;
-		}
-	}
-
-	return $config['default'];
-}*/
-
-function config($path = "")
+/**
+ * Get Config from database_config file in easy
+*/
+function config($path = '')
 {
 	$config = include(dirname(__FILE__) . '/database_config.php');
 	if(strpos($path, ".") !== false)
@@ -59,7 +42,9 @@ function config($path = "")
 
 
 /**
- *
+ * Generate Column Name when use Database::dataView() method
+ * 
+ * convert column_name and columnName to Column Name 
  */
 function getColumnName($columnName = '')
 {

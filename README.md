@@ -9,9 +9,6 @@ A database class which uses the PDO extension.
 If you have any issue please open issue to fix it.
 
 ```
-please note: this version (3.0.0) not fully testing,
-SO any problem or issue - open new issue to fix it.
-
 any suggestions would you like added or modified write to us at team@phptricks.org
 ```
 ### install via composer 
@@ -363,7 +360,7 @@ see (link() method to know how to generate navigation automatically)
  echo $posts->link();
  ```
 
-## dataView : 
+### dataView : 
  view query results in table
  we need to create a simple table to view results of query
  
@@ -383,6 +380,175 @@ echo $posts->dataView();
 echo $posts->link();
 
 ```
+
+## New V.3.1.0
+
+you can echo out the results directlly that convert 
+the results to json format
+
+```php
+$results = $db->table('table')->select();
+echo $results; // return json format
+```
+or foreach results as last virsion.
+
+```php
+$results = $db->table('table')->select();
+
+foreach($results as $key => $value)
+{
+    // ..
+}
+```
+
+select(), first(), find(), paginate() methods
+now return an instance of Collection class
+
+### last()
+
+get last record selected 
+
+```php
+
+$all = $db->table('my_table')->select();
+var_dump($all->last());
+```
+
+### all()
+
+all() and results() has same functionallaty
+
+```php
+$all = $db->table('my_table')->select();
+var_dump($all->all());
+// var_dump($all->results());
+```
+
+### each(callable $callback)
+to each results with callback function.
+
+```php
+
+$results = $db->table('table')->select();
+
+$results->each(function($row) {
+    echo $row->column_name . " !! <br>";
+});
+
+$new = [];
+$results->each(function($row) {
+    $new[] =  $row->column_name;
+});
+
+// you can chaning first(), last(), filter(), map(), each(),
+// toJson(), keys(), empty() with each() method
+
+$results->each(function($row) {
+    $new[] =  $row->column_name;
+});
+
+```
+
+### filter(callable $callback)
+
+filter results values.
+
+```php
+$results = $db->table('table')->select();
+
+$filterdResults = $results->filter(function($row) {
+    return $row->id > 15;
+});
+
+//----
+
+$results = $db->table('table')->select();
+
+$filterdResults = $results->filter(function($row, $key) {
+    // you can use $key if you want 
+    return $row->id > 15;
+});
+
+//----
+
+$results = $db->table('table')->select();
+
+// exclude null values !
+$filterdResults = $results->filter();
+
+// you can use first(), last(), filter(), map(), each(),
+// toJson(), keys(), empty() with $filterdResults variable
+
+
+```
+
+### map(callable $callback)
+
+```php
+
+$results = $db->table('table')->select();
+$newResults = $results->map(function($row) {
+    // return ..
+});
+
+// you can use first(), last(), filter(), map(), each(),
+// toJson(), keys(), empty() with $newResults variable
+
+```
+
+### toJson()
+
+convert results to json format
+
+```php
+$results = $db->table('table')->select();
+
+echo $results->toJson();
+```
+
+### merge(array|instance of Collection)
+
+merge array with collection or 2 collections
+
+```php
+$results = $db->table('table')->select();
+$otherResults = $db->table('other_table')->select();
+
+$merge = $results->merge($otherResults);
+
+// you can use first(), last(), filter(), map(), each(),
+// toJson(), keys(), empty() with $merge variable
+
+```
+
+### keys()
+get results keys
+
+```php
+$results = $db->table('table')->select();
+
+var_dump($results->keys());
+
+```
+
+### empty()
+
+check if results id empty or not
+
+```php
+$results = $db->table('table')->select();
+
+if(empty($results))
+{
+    echo "Oops, no results found";
+}
+else
+{
+    var_dump($results);
+}
+
+```
+
 --------------------------------
 
 # Data Definition Language (DDL) :
@@ -494,6 +660,20 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 
 =============================
 # Change Log
+### 3.1.0
+* FIX : Dublocate connection
+* ADD : Some methods
+    * each() -> to each all collection values
+    * map()  -> to map all results
+    * all()  -> to get all results
+    * last() -> to get last recored selectedw
+    * filter() -> to filter values
+    * keys() -> to get collection keys
+    * toJson() -> to convert results to json format
+* ADD : convert results to json format when use collection as string automaticlly
+* ADD : search() method to ease search in database or filtering results directlly
+
+* ADD : Examples folder -> include some examples to best way to use this Class.
 
 ### 3.0.0
 * ADD    : direct update functionality

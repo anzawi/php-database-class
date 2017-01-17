@@ -47,9 +47,9 @@ return [
 		'mysql' => [
 				'driver' => 'mysql',
 				'host_name' => 'localhost',
-				'db_name' => 'test',
-				'db_user' => 'homestead',
-				'db_password' => 'secret'
+				'db_name' => 'database_name',
+				'db_user' => 'database_username',
+				'db_password' => 'database_user_password'
 		],
 
 		// PostgreSQL
@@ -106,5 +106,10 @@ return [
 		"no_data_found_message" => "Oops, No Data Found to show ..",
 		"records_per_page"      => 10,
 		"link_query_key"        => "page"
+	],
+
+	"search" => [
+		"key" => "search",
+		"method" => "get"
 	]
 ];

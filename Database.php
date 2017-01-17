@@ -4,9 +4,9 @@
  * please don't remove this comment block
  *
  * @author phptricks Team - Mohammad Anzawi
- * @author_uri http://phptricks.org
+ * @author_uri https://phptricks.org
  * @uri https://github.com/anzawi/php-database-class
- * @version 3.0.0
+ * @version 3.1.0
  * @licence MIT -> https://opensource.org/licenses/MIT
  * @package PHPtricks\Database
  */
@@ -30,10 +30,6 @@ class Database implements \IteratorAggregate, \ArrayAccess
     private static $_instance;
 
     private
-	    /**
-	     *  @var $_pdo object PDO object
-	     */
-	    $_pdo,
 	    /**
 	     *  @var $_query string store sql statement
 	     */
@@ -70,6 +66,10 @@ class Database implements \IteratorAggregate, \ArrayAccess
 
 
     protected
+        /**
+         *  @var $_pdo object PDO object
+         */
+        $_pdo,
 	    /**
 	     * @var $_table string current table name
 	     */
@@ -105,13 +105,23 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	    }
     }
 
+    // public function __call($method, $args)
+    // {
+    //     var_dump($this);
+    // }
+
 	/**
 	 * @param $prop
 	 * @return mixed
 	 */
     public function __get($prop)
     {
-	    return isset($this->_results->$prop) ? $this->_results->$prop : null;
+        if(!isset($this->__cach[md5($this->_table)]))
+        {
+            return null;
+        }
+
+        return isset($this->_results->$prop) ? $this->_results->$prop : null;
     }
 
     public function __set($prop, $value)
@@ -245,7 +255,7 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	    // check if $_instance is null or not
 	    // if null so connect database
 	    // otherwise return current connection object
-        if(!isset(self::$_instance)) {
+        if(!isset(self::$_instance) || self::$_instance == null) {
             self::$_instance = new Database();
         }
 
@@ -399,9 +409,13 @@ class Database implements \IteratorAggregate, \ArrayAccess
     {
 	    $x = 1;
 	    $this->_query = "WHERE";
-	    foreach($this->results() as $i => $row)
-	    {
-		    $this->_query .= " {$i} = {$row}";
+        
+        foreach($this->results() as $i => $row)
+        {
+            if(!is_numeric($row))
+                $this->_query .= " {$i} = '{$row}'";
+            else
+		      $this->_query .= " {$i} = {$row}";
 		    // add comma between values
 		    if($x < count((array)$this->results())) {
 			    $this->_query .= " AND";
@@ -409,6 +423,7 @@ class Database implements \IteratorAggregate, \ArrayAccess
 
 		    $x++;
 	    }
+
 	    return $this->update((array)$this->getNewValues());
     }
 
@@ -431,7 +446,29 @@ class Database implements \IteratorAggregate, \ArrayAccess
             . " FROM {$this->_table} {$this->_query}";
 
         $this->_query = $sql;
-        return new Database($this->query($sql)->results(), ['table' => $this->_table, 'id' => $this->_idColumn]);
+
+        return $this->collection([
+            'results' => $this->query($sql)->results(),
+            'table'   => $this->_table,
+            'id'      => $this->_idColumn
+        ]);
+
+        // return new Database($this->query($sql)->results(), ['table' => $this->_table, 'id' => $this->_idColumn]);
+    }
+
+    protected function collection($collection)
+    {
+        return new Collection($collection, self::$_instance); 
+    }
+
+    protected function getCollection($table)
+    {
+        if(isset($this->__cach[md5($table)]))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -440,14 +477,15 @@ class Database implements \IteratorAggregate, \ArrayAccess
      */
     public function delete()
     {
+        $results = (array)$this->_results;
 	    if($this->count() == 1)
 	    {
-		    return $this->remove($this->_results);
+		    return $this->remove($results);
 	    }
 
 	    for($i = 0; $this->count() > $i; $i++)
 	    {
-		    $this->remove($this->_results[$i]);
+		    $this->remove( $results[$i]);
 	    }
 
 	    return true;
@@ -457,9 +495,13 @@ class Database implements \IteratorAggregate, \ArrayAccess
     {
 	    $this->_where = "WHERE";
 	    $x = 1;
+
 	    foreach($data as $i => $row)
 	    {
-		    $this->_where .= " {$i} = {$row}";
+            if(!is_numeric($row))
+		      $this->_where .= " {$i} = '{$row}'";
+            else
+                $this->_where .= " {$i} = {$row}";
 		    // add comma between values
 		    if($x < count((array)$data)) {
 			    $this->_where .= " AND";
@@ -477,16 +519,8 @@ class Database implements \IteratorAggregate, \ArrayAccess
      */
     public function find($id)
     {
-        $result = $this->where($this->_idColumn, $id)
-            ->first()->results();
-
-
-	    if(count((array)$result))
-	    {
-		    return new Database($result, ['id' => $this->_idColumn, 'table' => $this->_table]);
-	    }
-
-	    return new Database([], ['id' => $this->_idColumn, 'table' => $this->_table]);
+        return $result = $this->where($this->_idColumn, $id)
+            ->first();
     }
 
     /**
@@ -622,9 +656,18 @@ class Database implements \IteratorAggregate, \ArrayAccess
 
 		if(count((array)$results))
 		{
-			return new Database($results[0], ['table' => $this->_table, 'id' => $this->_idColumn]);
+            return $this->collection([
+                'results' => $results[0],
+                'table'   => $this->_table,
+                'id'      => $this->_idColumn
+            ]);
 		}
-		return new Database([], ['table' => $this->_table, 'id' => $this->_idColumn]);
+
+        return $this->collection([
+            'results' => [],
+            'table'   => $this->_table,
+            'id'      => $this->_idColumn
+        ]);
 	}
 
 	public function firstRecord()
@@ -1284,4 +1327,105 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	{
 		return $this->_newValues;
 	}
+}
+
+class Collection extends Database
+{
+    public function __construct($data, $connection = null)
+    {
+        if(isset($connection))
+         {
+            $this->_table = $data['table'];
+            $this->_results = $data['results'];
+            $this->_idColumn = $data['id'];
+            $this->_pdo = $connection->_pdo;
+        }
+        else
+            $this->_results = $data;
+    }
+
+    public function all()
+    {
+        return $this->results();
+    }
+
+    public function empty()
+    {
+        return empty($this->_results);
+    }
+
+    public function first()
+    {
+        return isset($this->_results[0]) ? $this->_results[0] : null;
+    }
+
+    public function last()
+    {
+        $reverse = array_reverse($this->results());
+
+        return isset($reverse[0]) ? $reverse[0] : null;
+    }
+
+    public function each(callable $callback)
+    {
+        foreach ($this->results() as $key => $value)
+        {
+            $callback($value, $key);
+        }
+
+        return $this;
+    }
+
+    public function filter(callable $callback = null)
+    {
+        if($callback)
+        {
+            return new static(array_filter($this->results(), $callback));
+        }
+
+        // exclude null and empty
+        return new static(array_filter($this->results()));
+    }
+
+    public function keys()
+    {
+        return new static(array_keys($this->results()));
+    }
+
+    public function map(callable $callback)
+    {
+        $keys = $this->keys()->all();
+        $results = array_map($callback, $this->results(), $keys);
+
+        return new static(array_combine($keys, $results));
+    }
+
+
+    public function toJson()
+    {
+        return json_encode($this->results());
+    }
+
+    public function __toString()
+    {
+        return $this->toJson();
+    }
+
+    public function merge($items)
+    {
+        return new static(
+            array_merge(
+                    $this->results(), 
+                    $this->toArray($items)
+                )
+            );
+    }
+
+    protected function toArray($items)
+    {
+        if(!is_array($items) && $items instanceof Collection)
+            return $items->all();
+
+        return $items;
+    }
 }
