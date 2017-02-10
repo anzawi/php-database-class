@@ -58,11 +58,15 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	     *  @var $_colsCount integer columns count for query results
 	     * using into dataView() method to generate columns
 	     */
-	    $_colsCount = -1,
+        $_colsCount = -1,
 	    /**
 	     * @var $_newValues null to save new value to use save() method
 	     */
-		$_newValues = null;
+        $_newValues = null;
+	    /**
+	    * @var $_transactionality boolean to enable or disable transactions to querys
+	    */
+        $_transactionality = true;
 
 
     protected
@@ -127,6 +131,19 @@ class Database implements \IteratorAggregate, \ArrayAccess
 			    $this->_newValues->$prop = $value;
 		    }
 	    }
+    }
+	
+    public function getTransactionality()
+    {
+        return $this->_transactionality;
+    }
+
+    public function setTransactionality($value)
+    {
+        if (is_bool($value)) {
+            $this->_transactionality = $value;
+        }
+        return false;
     }
 
     // foreach results
@@ -269,6 +286,9 @@ class Database implements \IteratorAggregate, \ArrayAccess
         // set _error. true to that if they can not be false for this function to work properly, this function makes the
 	    // value of _error false if there is no implementation of the sentence correctly
         $this->_error = false;
+	
+	if ($this->_transactionality==true) $this->_pdo->beginTransaction();
+	    
         // check if sql statement is prepared
         $query = $this->_pdo->prepare($sql);
         // if $params isset
@@ -301,10 +321,13 @@ class Database implements \IteratorAggregate, \ArrayAccess
 
 		    // set _count = count rows comes
 		    $this->_count = $query->rowCount();
+		    
+		    if ($this->_transactionality==true) $this->_pdo->commit();
 
-	    }
-	    else
+	    } else {
+		if ($this->_transactionality==true) $this->_pdo->rollBack(); 
 	    	$this->_error = true;
+	    }
 
 
         return $this;
