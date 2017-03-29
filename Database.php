@@ -6,12 +6,11 @@
  * @author phptricks Team - Mohammad Anzawi
  * @author_uri https://phptricks.org
  * @uri https://github.com/anzawi/php-database-class
- * @version 3.1.0
+ * @version 3.2.0
  * @licence MIT -> https://opensource.org/licenses/MIT
  * @package PHPtricks\Database
  */
 
-namespace PHPtricks\Database;
 
 // include config() function file
 include __DIR__ . "/config_function.php";
@@ -62,8 +61,9 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	    /**
 	     * @var $_newValues null to save new value to use save() method
 	     */
-		$_newValues = null;
-
+		$_newValues = null,
+        
+        $_ordering = false;
 
     protected
         /**
@@ -264,6 +264,7 @@ class Database implements \IteratorAggregate, \ArrayAccess
      */
     public function query($sql, $params = [])
     {
+        echo $sql;
         $this->_query = "";
         $this->_where = "WHERE";
         // set _error. true to that if they can not be false for this function to work properly, this function makes the
@@ -423,8 +424,13 @@ class Database implements \IteratorAggregate, \ArrayAccess
      * @param  array  $fields fields we need to select
      * @return Database result of select as Database object
      */
-    public function select($fields = ['*'])
+    public function select($fields = ['*'], $last = false)
     {
+        if($fields === true)
+        {
+            $fields = ['*'];
+            $last = true;
+        }
 	    if($fields != ['*'] && !is_null($this->_idColumn))
 	    {
 			if(!in_array($this->_idColumn, $fields))
@@ -433,10 +439,23 @@ class Database implements \IteratorAggregate, \ArrayAccess
 			}
 	    }
 
-        $sql = "SELECT " . implode(', ', $fields)
-            . " FROM {$this->_table} {$this->_query}";
+        if(!$last)
+            $sql = "SELECT " . implode(', ', $fields)
+                . " FROM {$this->_table} {$this->_query}";
+        else
+        {
+            //$this->_query .= ($this->_ordering == false ? " ORDER BY {$this->_idColumn} DESC" : '');
+            $sql = "SELECT * FROM (
+                        SELECT " . implode(', ', $fields) . "  
+                        FROM {$this->_table}
+                        
+                         {$this->_query}  
+                        ) sub  ORDER by id ASC";
+        }
+            
 
         $this->_query = $sql;
+        $this->_ordering = false;
 
         return $this->collection([
             'results' => $this->query($sql)->results(),
@@ -636,6 +655,13 @@ class Database implements \IteratorAggregate, \ArrayAccess
     	return $this;
     }
 
+    public function orderBy($colName, $type = 'ASC')
+    {
+        $this->_query .= " ORDER BY {$colName} {$type}";
+        $this->_ordering = true;
+        return $this;
+    }
+
 	/**
 	 * get first row from query results
 	 * @return Database
@@ -679,10 +705,17 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	 * @param int $to
 	 * @return $this
 	 */
-    public function limit($from = 0, $to = 15)
+    public function limit($from = 0, $to = 0)
     {
-    	if(is_integer($from) && is_integer($to))
-    	    $this->_query .= " LIMIT {$from}, {$to}";
+        if(!$to)
+        {
+            $this->_query .= " LIMIT {$from}";
+        }
+        else
+        {
+            $this->_query .= " LIMIT {$from}, {$to}";
+        }
+    	    
     	return $this;
     }
 
@@ -734,15 +767,6 @@ class Database implements \IteratorAggregate, \ArrayAccess
     }
 
 
-    /**
-     * Show last query
-     * @return string
-     */
-    public function showMeQuery()
-    {
-    	return $this->_sql;
-    }
-
 	/**
 	 *
 	 * New In V.2.1.0
@@ -766,8 +790,14 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	 * now add to url this string query (?page=2 or 3 or 4 .. etc)
 	 * see (link() method to know how to generate navigation automatically)
 	 */
-	public function paginate($recordsCount = 0)
+	public function paginate($recordsCount = 0, $last = false)
 	{
+        if($recordsCount === true)
+        {
+            $last = true;
+            $recordsCount = 0;
+        }
+
 		if($recordsCount === 0)
 			$recordsCount = config("pagination.records_per_page");
 
@@ -787,7 +817,7 @@ class Database implements \IteratorAggregate, \ArrayAccess
 		$this->_colsCount = ceil(count($this->select()->results()) / $recordsCount);
 
 		// return query results
-		return $this->limit($startFrom, $recordsCount)->select();
+		return $this->limit($startFrom, $recordsCount)->select(['*'], $last);
 	}
 
 	/**
@@ -1350,11 +1380,25 @@ class Collection extends Database
         return isset($this->_results[0]) ? $this->_results[0] : null;
     }
 
-    public function last()
+    public function last($count = 0)
     {
         $reverse = array_reverse($this->results());
 
-        return isset($reverse[0]) ? $reverse[0] : null;
+        if(!$count)
+        {
+            return isset($reverse[0]) ? $reverse[0] : null;
+        }
+
+        $lastRecords = [];
+        $j = 0;
+
+        for($i = 0; $i < $count; $i++)
+        {
+            $lastRecords[$j] = $reverse[$i];
+            $j++;
+        }
+
+        return $lastRecords;
     }
 
     public function each(callable $callback)
