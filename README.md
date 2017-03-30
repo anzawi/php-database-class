@@ -109,6 +109,18 @@ you can use ->results(); to convert to array or object as you config a "fetch"
     ```
     you can use `where` method an infinite :)
     
+### get last records (from last) :
+
+to get last records in table just send seconde parameter to select method, or just first method to true
+
+```php
+$fromLast = $db->table('users')->select(true);
+
+or 
+
+$fromLast = $db->table('users')->select(['id', 'name', 'email'], true);
+```
+
 ### where types :
 - whereBetween() :
     ```php
@@ -350,6 +362,20 @@ var_dump($results->results());
 now add to url this string query (?page=2 or 3 or 4 .. etc)
 see (link() method to know how to generate navigation automatically)
 
+- get last records (from last) :
+
+to get last records in table just send seconde parameter to paginate method, or just first method to true
+
+```php
+$fromLast = $db->table('users')->paginate(true);
+
+or 
+
+$fromLast = $db->table('users')->paginate(20, true);
+```
+
+
+
 ### link : 
  create pagination list to navigate between pages
  * compatible with bootstrap and foundation frameworks
@@ -381,7 +407,18 @@ echo $posts->link();
 
 ```
 
-## New V.3.1.0
+## get last records (from last) :
+
+to get last records in table after select or paginate
+
+```php
+get last records
+$lastRecords = $db->table('users')->select()->last();
+
+or get last 10 records
+
+$lastRecords = $db->table('users')->select()->last(10);
+```
 
 you can echo out the results directlly that convert 
 the results to json format
@@ -401,6 +438,45 @@ foreach($results as $key => $value)
 }
 ```
 
+## orderBy()
+
+to order results " ORDER BY "
+
+```php
+$db->table('posts')
+    ->notIn('id', [1, 2, 3, 4, 5])
+    ->orderBy('id', 'DESC)
+    ->select();
+    
+// OR
+
+
+$db->table('posts')
+    ->where('type', 'posts')
+    ->orderBy('author', 'ASC')
+    ->select();
+```
+
+plase note :
+
+when you using " limit() with orderBy() " let limit() method after orderBy()
+for example :
+
+``php
+
+// OK
+$db->table('posts')
+    ->orderBy('id', 'DESC)
+    ->limit(10)
+    ->select();
+    
+// NO
+$db->table('posts')
+    ->limit(10)
+    ->orderBy('id', 'DESC)
+    ->select();
+```
+
 select(), first(), find(), paginate() methods
 now return an instance of Collection class
 
@@ -412,6 +488,18 @@ get last record selected
 
 $all = $db->table('my_table')->select();
 var_dump($all->last());
+
+to get last records in table after select or paginate
+
+```php
+get last records
+$lastRecords = $db->table('users')->select()->last();
+
+or get last 10 records
+
+$lastRecords = $db->table('users')->select()->last(10);
+```
+
 ```
 
 ### all()
