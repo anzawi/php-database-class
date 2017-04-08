@@ -750,9 +750,9 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 # Change Log
 
 ### 3.2.0
-* ADD : Order By (orderBy())
-* ADD : get Latest Data inserted into table
-* FIX : last() method to return last -n- recordes
+* ADD    : Order By (orderBy())
+* ADD    : get Latest Data inserted into table
+* MODIFY : last() method to return last -n- recordes
 
 ### 3.1.0
 * FIX : Duplicate connection
