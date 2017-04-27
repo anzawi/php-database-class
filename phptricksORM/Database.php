@@ -6,7 +6,7 @@
  * @author phptricks Team - Mohammad Anzawi
  * @author_uri https://phptricks.org
  * @uri https://github.com/anzawi/php-database-class
- * @version 3.2.0
+ * @version 4.0.0
  * @licence MIT -> https://opensource.org/licenses/MIT
  * @package PHPtricks\Database
  */
