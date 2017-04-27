@@ -24,8 +24,12 @@ any suggestions would you like added or modified write to us at team@phptricks.o
 --------------------
 # to use class :
 
+very importanst note :
+in this relase we change namespace of pakage
+from `PHPtricks\Database` to `PHPtricks\Orm`
+
 ## (config) :
-- go to (database_config.php) file
+- go to (Config/database_config.php) file
 - config class as your project need
 
 ## describe configuration :
@@ -42,20 +46,24 @@ any suggestions would you like added or modified write to us at team@phptricks.o
  
 ```php
     <?php
-    include_once('phptricks/Database.php');
+    // if installation via composer
+    include_once('vendor/autoload.php');
+
+    // otherwise
+    include_once('phptricks/vendor/autoload.php');
 ```
 ### step 2 :
 - Create the instance (connect with database)
 ```php
-    use PHPtricks\Database\Database;
+    use PHPtricks\Orm\Database;
     $db = Database::connect();
 ```
 
 # how it work (methods):
 
-## select() :
+## select($fields = ['*'], $last = false) :
 
-very important (select, first, find, paginate) methods __return Database object__
+very important (select, first, find, paginate) methods __return Collection object__
 you can use ->results(); to convert to array or object as you config a "fetch"
 
  - select all data from `test` table :
@@ -81,12 +89,22 @@ you can use ->results(); to convert to array or object as you config a "fetch"
       echo $coustomFields['name'];
       echo $coustomFields['email'];
     
-    // or yo can foreach the returned values
+    // or you can foreach the returned values
     foreach($coustomFields as $fields)
     {
       // ...
     }
     ```
+
+- select latest `posts` (select from last to first)
+    ```php
+    $latestPosts = $db->table('posts')->select(true);
+    
+    // or
+
+    $latestPosts = $db->table('posts')->select(['title', 'content', 'publish_date'], true);
+    ```
+
 - select `post` where its `id` is equal 5
     ```php
     $post = $db->table('posts')->where('id', '=', 5)->select();
@@ -110,19 +128,19 @@ you can use ->results(); to convert to array or object as you config a "fetch"
     you can use `where` method an infinite :)
     
 ### where types :
-- whereBetween() :
+- whereBetween($field, $values = []) :
     ```php
     $db->table('posts')
         ->whereBetween('data', [$start, $end])
         ->select();
     ```
-- likeWhere() :
+- likeWhere($field, $value) :
     ```php
     $db->table('users')
         ->likeWhere('name', 'mohammad')
         ->select();
     ```
-- orWhere() :
+- orWhere($field, $operator, $value = false) :
     ```php
     $db->table('posts')
         ->where('id', 5)
@@ -136,7 +154,7 @@ you can use ->results(); to convert to array or object as you config a "fetch"
         ->orWhere('id', 3)
         ->first();
 ```
-all examples above you can replace `select` with `first` to get only first row selected.
+all examples above you can replace `select` with `first` or `paginate` to get only first row selected.
 
 ### find($id = 0) method :
 find where `id`
@@ -148,7 +166,7 @@ please note : change $_idColumn variable to id name in table
 if the table have no id set it to null.
 you can user idName() method or edit from Database class file direct
 
-### setIdName($id = id)
+### setIdName($id = 'id')
 change id column name | by default is id
  ```php
  $db->table('test')->idName('id_name');
@@ -198,21 +216,21 @@ if you select row and you want to update direct
 is this example we configure "fetch" to object
 
 ```php
-use PHPtricks\Database;
+use PHPtricks\Orm\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user->name = 'Mohammad';
-$user->email = team@phptricks.org;
+$user->email = 'team@phptricks.org';
 $user->save();
 ```
 is this example we configure "fetch" to array
 
 ```php
-use PHPtricks\Database;
+use PHPtricks\Orm\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user['name'] = 'Mohammad';
-$user['email'] = team@phptricks.org;
+$user['email'] = 'team@phptricks.org';
 $user->save();
 ```
 but you cant use __save__ with multi rows
@@ -240,7 +258,7 @@ RIGHT WAY :
     }
 ```
 
-## delete :
+## delete() :
 delete user has id 105
 ```php
 $db->table('users')
@@ -288,7 +306,7 @@ $unnessoryPosts = $db->table('posts')
 $unnessoryPosts->delete();
 ```
 
-### limit :
+### limit($from = 0, $to = 0) :
 get first 10 rows
 ```php
 $justTenRows = $db->table('posts')
@@ -297,7 +315,7 @@ $justTenRows = $db->table('posts')
     ->select();
 ```
 
-### offset :
+### offset($offset) :
 get first 10 rows offset 3
 ```php
 $db->table('posts')
@@ -307,7 +325,7 @@ $db->table('posts')
     ->select();
 ```
 
-### in :
+### in($field, $values = []) :
 
 ```php
 $db->table('posts')
@@ -315,7 +333,7 @@ $db->table('posts')
     ->select();
 ```
 
-### notIn :
+### notIn($field, $values = []) :
 
 ```php
 $db->table('posts')
@@ -324,7 +342,7 @@ $db->table('posts')
 ```
 
 
-### paginate : 
+### paginate($recordsCount = 0, $last = false) : 
 
 to paginate results
 
@@ -340,7 +358,7 @@ $recordsCount => default value take from database_config.php file
 ```
 
 ```php
-$db = PHPtricks\Database\Database::connect();
+$db = PHPtricks\Orm\Database::connect();
 $results = $db->table("blog")->paginate(15);
 var_dump($results);
 
@@ -350,7 +368,7 @@ var_dump($results->results());
 now add to url this string query (?page=2 or 3 or 4 .. etc)
 see (link() method to know how to generate navigation automatically)
 
-### link : 
+### link() : 
  create pagination list to navigate between pages
  * compatible with bootstrap and foundation frameworks
  
@@ -360,7 +378,7 @@ see (link() method to know how to generate navigation automatically)
  echo $posts->link();
  ```
 
-### dataView : 
+### dataView() : 
  view query results in table
  we need to create a simple table to view results of query
  
@@ -374,14 +392,13 @@ echo $data->dataView();
 
 ```php
 
-$db = PHPtricks\Database\Database::connect();
+$db = PHPtricks\Orm\Database::connect();
 $posts = $db->table("blog")->paginate();
 echo $posts->dataView();
 echo $posts->link();
 
 ```
 
-## New V.3.1.0
 
 you can echo out the results directlly that convert 
 the results to json format
@@ -556,6 +573,7 @@ else
 ### Create Table : 
 
 ```php
+use PHPtricks\Orm\Database;
 $db = Database::connect();
 
 $db->table('my_new_table_name')->schema('schema as array')->create();
@@ -563,6 +581,7 @@ $db->table('my_new_table_name')->schema('schema as array')->create();
 EX : 
 
 ```php
+use PHPtricks\Orm\Database;
 $db = Database::connect();
 
 $db->table('students')->schema([
@@ -660,6 +679,11 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 
 =============================
 # Change Log
+
+### 4.0.0
+* MODIFY : namesace to `PHPtricks\Orm`
+* MODIFY : files structure
+
 ### 3.1.0
 * FIX : Duplicate connection
 * ADD : Some methods

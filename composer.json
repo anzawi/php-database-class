@@ -14,5 +14,15 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {},
+
+    "autoload": {
+        "psr-4": {
+            "PHPtricks\\Orm\\" : "phptricksORM"
+        },
+
+        "files": [
+            "Config/config_function.php"
+        ]
+    }
 }
