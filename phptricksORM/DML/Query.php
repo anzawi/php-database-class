@@ -15,7 +15,7 @@ trait Query
 	 */
 	public function query($sql, $params = [])
 	{
-		echo $sql;
+		// echo $sql;
 		$this->_query = "";
 		$this->_where = "WHERE";
 		// set _error. true to that if they can not be false for this function to work properly, this function makes the
