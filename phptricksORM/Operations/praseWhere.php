@@ -45,6 +45,7 @@ trait parseWhere {
 			else
 			{
 				$this->_query .= " `{$cons[0]}` $cons[1] $cons[2] ";
+				break;
 			}
 			
 		}
