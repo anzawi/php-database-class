@@ -20,7 +20,7 @@ trait parseWhere {
 	{
 
 		$this->_query .= " {$type} (";
-var_dump($cons);
+
 		foreach ($cons as $con => $st)
 		{
 			if(is_array($st))
