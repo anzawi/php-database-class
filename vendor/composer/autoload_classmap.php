@@ -21,7 +21,7 @@ return array(
     'PHPtricks\\Orm\\Operations\\Main' => $baseDir . '/phptricksORM/Operations/Main.php',
     'PHPtricks\\Orm\\Operations\\Other' => $baseDir . '/phptricksORM/Operations/Other.php',
     'PHPtricks\\Orm\\Operations\\Where' => $baseDir . '/phptricksORM/Operations/Where.php',
-    'PHPtricks\\Orm\\Operations\\parseWhere' => $baseDir . '/phptricksORM/Operations/praseWhere.php',
+    'PHPtricks\\Orm\\Operations\\parseWhere' => $baseDir . '/phptricksORM/Operations/parseWhere.php',
     'PHPtricks\\Orm\\Providers\\Provider' => $baseDir . '/phptricksORM/Providers/Provider.php',
     'PHPtricks\\Orm\\Variables' => $baseDir . '/phptricksORM/Variables.php',
 );

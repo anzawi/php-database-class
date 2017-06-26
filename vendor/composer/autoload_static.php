@@ -40,7 +40,7 @@ class ComposerStaticInit4632db9e427f086ffa7811811a22845f
         'PHPtricks\\Orm\\Operations\\Main' => __DIR__ . '/../..' . '/phptricksORM/Operations/Main.php',
         'PHPtricks\\Orm\\Operations\\Other' => __DIR__ . '/../..' . '/phptricksORM/Operations/Other.php',
         'PHPtricks\\Orm\\Operations\\Where' => __DIR__ . '/../..' . '/phptricksORM/Operations/Where.php',
-        'PHPtricks\\Orm\\Operations\\parseWhere' => __DIR__ . '/../..' . '/phptricksORM/Operations/praseWhere.php',
+        'PHPtricks\\Orm\\Operations\\parseWhere' => __DIR__ . '/../..' . '/phptricksORM/Operations/parseWhere.php',
         'PHPtricks\\Orm\\Providers\\Provider' => __DIR__ . '/../..' . '/phptricksORM/Providers/Provider.php',
         'PHPtricks\\Orm\\Variables' => __DIR__ . '/../..' . '/phptricksORM/Variables.php',
     );
