@@ -16,7 +16,7 @@ trait Query
 	public function query($sql, $params = [])
 	{
 		// uncomment this line to see your query
-		// var_dump($sql);
+		 var_dump($sql);
 		$this->_query = "";
 		$this->_where = "WHERE";
 		// set _error. true to that if they can not be false for this function to work properly, this function makes the
