@@ -646,7 +646,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     empty()
 
 
-# New in v 3.2.0
+# New in v 4.1.0
 ### parseWhere(array $cons, $type = "AND")
 ```php
  $con = [
