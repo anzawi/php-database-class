@@ -24,11 +24,6 @@ class Collection extends Database
 		return $this->results();
 	}
 
-	public function empty()
-	{
-		return empty($this->_results);
-	}
-
 	public function first()
 	{
 		return isset($this->_results[0]) ? $this->_results[0] : null;

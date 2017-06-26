@@ -24,12 +24,8 @@ any suggestions would you like added or modified write to us at team@phptricks.o
 --------------------
 # to use class :
 
-very importanst note :
-in this relase we change namespace of pakage
-from `PHPtricks\Database` to `PHPtricks\Orm`
-
 ## (config) :
-- go to (Config/database_config.php) file
+- go to (database_config.php) file
 - config class as your project need
 
 ## describe configuration :
@@ -46,24 +42,20 @@ from `PHPtricks\Database` to `PHPtricks\Orm`
  
 ```php
     <?php
-    // if installation via composer
-    include_once('vendor/autoload.php');
-
-    // otherwise
-    include_once('phptricks/vendor/autoload.php');
+    include_once('phptricks/Database.php');
 ```
 ### step 2 :
 - Create the instance (connect with database)
 ```php
-    use PHPtricks\Orm\Database;
+    use PHPtricks\Database\Database;
     $db = Database::connect();
 ```
 
 # how it work (methods):
 
-## select($fields = ['*'], $last = false) :
+### select() :
 
-very important (select, first, find, paginate) methods __return Collection object__
+very important (select, first, find, paginate) methods __return Database object__
 you can use ->results(); to convert to array or object as you config a "fetch"
 
  - select all data from `test` table :
@@ -89,22 +81,12 @@ you can use ->results(); to convert to array or object as you config a "fetch"
       echo $coustomFields['name'];
       echo $coustomFields['email'];
     
-    // or you can foreach the returned values
+    // or yo can foreach the returned values
     foreach($coustomFields as $fields)
     {
       // ...
     }
     ```
-
-- select latest `posts` (select from last to first)
-    ```php
-    $latestPosts = $db->table('posts')->select(true);
-    
-    // or
-
-    $latestPosts = $db->table('posts')->select(['title', 'content', 'publish_date'], true);
-    ```
-
 - select `post` where its `id` is equal 5
     ```php
     $post = $db->table('posts')->where('id', '=', 5)->select();
@@ -127,32 +109,20 @@ you can use ->results(); to convert to array or object as you config a "fetch"
     ```
     you can use `where` method an infinite :)
     
-### get last records (from last) :
-
-to get last records in table just send seconde parameter to select method, or just first method to true
-
-```php
-$fromLast = $db->table('users')->select(true);
-
-or 
-
-$fromLast = $db->table('users')->select(['id', 'name', 'email'], true);
-```
-
 ### where types :
-- whereBetween($field, $values = []) :
+- whereBetween() :
     ```php
     $db->table('posts')
         ->whereBetween('data', [$start, $end])
         ->select();
     ```
-- likeWhere($field, $value) :
+- likeWhere() :
     ```php
     $db->table('users')
         ->likeWhere('name', 'mohammad')
         ->select();
     ```
-- orWhere($field, $operator, $value = false) :
+- orWhere() :
     ```php
     $db->table('posts')
         ->where('id', 5)
@@ -166,7 +136,7 @@ $fromLast = $db->table('users')->select(['id', 'name', 'email'], true);
         ->orWhere('id', 3)
         ->first();
 ```
-all examples above you can replace `select` with `first` or `paginate` to get only first row selected.
+all examples above you can replace `select` with `first` to get only first row selected.
 
 ### find($id = 0) method :
 find where `id`
@@ -178,13 +148,13 @@ please note : change $_idColumn variable to id name in table
 if the table have no id set it to null.
 you can user idName() method or edit from Database class file direct
 
-### setIdName($id = 'id')
+### setIdName($id = id)
 change id column name | by default is id
  ```php
  $db->table('test')->idName('id_name');
  ```
 
-## insert($values = []) :
+### insert($values = []) :
 insert new user to `users` table:
 ```php
 $db->table('users')
@@ -205,7 +175,7 @@ $db->table('posts')
     ]);
 ```
 
-## update($values = []) :
+### update($values = []) :
 if we need to update user name to 'ali' where his id is 5 :
 ```php
 $db->table('users')
@@ -222,27 +192,27 @@ $db->table('posts')
         'title' => 'this is a test post'
     ]);
 ```
-## save()
+### save()
 if you select row and you want to update direct
 
 is this example we configure "fetch" to object
 
 ```php
-use PHPtricks\Orm\Database;
+use PHPtricks\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user->name = 'Mohammad';
-$user->email = 'team@phptricks.org';
+$user->email = team@phptricks.org;
 $user->save();
 ```
 is this example we configure "fetch" to array
 
 ```php
-use PHPtricks\Orm\Database;
+use PHPtricks\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user['name'] = 'Mohammad';
-$user['email'] = 'team@phptricks.org';
+$user['email'] = team@phptricks.org;
 $user->save();
 ```
 but you cant use __save__ with multi rows
@@ -270,7 +240,7 @@ RIGHT WAY :
     }
 ```
 
-## delete() :
+### delete :
 delete user has id 105
 ```php
 $db->table('users')
@@ -317,8 +287,18 @@ $unnessoryPosts = $db->table('posts')
                       
 $unnessoryPosts->delete();
 ```
+### count()
+to get selected records count
 
-### limit($from = 0, $to = 0) :
+```php
+$allUsers = $db->table('users')->select();
+
+echo $allUsers->count();
+
+```
+
+
+### limit :
 get first 10 rows
 ```php
 $justTenRows = $db->table('posts')
@@ -327,7 +307,7 @@ $justTenRows = $db->table('posts')
     ->select();
 ```
 
-### offset($offset) :
+### offset :
 get first 10 rows offset 3
 ```php
 $db->table('posts')
@@ -337,7 +317,7 @@ $db->table('posts')
     ->select();
 ```
 
-### in($field, $values = []) :
+### in :
 
 ```php
 $db->table('posts')
@@ -345,7 +325,7 @@ $db->table('posts')
     ->select();
 ```
 
-### notIn($field, $values = []) :
+### notIn :
 
 ```php
 $db->table('posts')
@@ -354,7 +334,7 @@ $db->table('posts')
 ```
 
 
-### paginate($recordsCount = 0, $last = false) : 
+### paginate : 
 
 to paginate results
 
@@ -370,7 +350,7 @@ $recordsCount => default value take from database_config.php file
 ```
 
 ```php
-$db = PHPtricks\Orm\Database::connect();
+$db = PHPtricks\Database\Database::connect();
 $results = $db->table("blog")->paginate(15);
 var_dump($results);
 
@@ -380,25 +360,7 @@ var_dump($results->results());
 now add to url this string query (?page=2 or 3 or 4 .. etc)
 see (link() method to know how to generate navigation automatically)
 
-<<<<<<< HEAD
-### link() : 
-=======
-- get last records (from last) :
-
-to get last records in table just send seconde parameter to paginate method, or just first method to true
-
-```php
-$fromLast = $db->table('users')->paginate(true);
-
-or 
-
-$fromLast = $db->table('users')->paginate(20, true);
-```
-
-
-
 ### link : 
->>>>>>> origin/master
  create pagination list to navigate between pages
  * compatible with bootstrap and foundation frameworks
  
@@ -408,7 +370,7 @@ $fromLast = $db->table('users')->paginate(20, true);
  echo $posts->link();
  ```
 
-### dataView() : 
+### dataView : 
  view query results in table
  we need to create a simple table to view results of query
  
@@ -422,28 +384,14 @@ echo $data->dataView();
 
 ```php
 
-$db = PHPtricks\Orm\Database::connect();
+$db = PHPtricks\Database\Database::connect();
 $posts = $db->table("blog")->paginate();
 echo $posts->dataView();
 echo $posts->link();
 
 ```
 
-<<<<<<< HEAD
-=======
-## get last records (from last) :
-
-to get last records in table after select or paginate
-
-```php
-get last records
-$lastRecords = $db->table('users')->select()->last();
-
-or get last 10 records
-
-$lastRecords = $db->table('users')->select()->last(10);
-```
->>>>>>> origin/master
+## New V.3.1.0
 
 you can echo out the results directlly that convert 
 the results to json format
@@ -463,45 +411,6 @@ foreach($results as $key => $value)
 }
 ```
 
-## orderBy()
-
-to order results " ORDER BY "
-
-```php
-$db->table('posts')
-    ->notIn('id', [1, 2, 3, 4, 5])
-    ->orderBy('id', 'DESC)
-    ->select();
-    
-// OR
-
-
-$db->table('posts')
-    ->where('type', 'posts')
-    ->orderBy('author', 'ASC')
-    ->select();
-```
-
-plase note :
-
-when you using " limit() with orderBy() " let limit() method after orderBy()
-for example :
-
-``php
-
-// OK
-$db->table('posts')
-    ->orderBy('id', 'DESC)
-    ->limit(10)
-    ->select();
-    
-// NO
-$db->table('posts')
-    ->limit(10)
-    ->orderBy('id', 'DESC)
-    ->select();
-```
-
 select(), first(), find(), paginate() methods
 now return an instance of Collection class
 
@@ -513,18 +422,6 @@ get last record selected
 
 $all = $db->table('my_table')->select();
 var_dump($all->last());
-
-to get last records in table after select or paginate
-
-```php
-get last records
-$lastRecords = $db->table('users')->select()->last();
-
-or get last 10 records
-
-$lastRecords = $db->table('users')->select()->last(10);
-```
-
 ```
 
 ### all()
@@ -644,23 +541,6 @@ var_dump($results->keys());
 
 ```
 
-### empty()
-
-check if results id empty or not
-
-```php
-$results = $db->table('table')->select();
-
-if(empty($results))
-{
-    echo "Oops, no results found";
-}
-else
-{
-    var_dump($results);
-}
-
-```
 
 --------------------------------
 
@@ -669,7 +549,6 @@ else
 ### Create Table : 
 
 ```php
-use PHPtricks\Orm\Database;
 $db = Database::connect();
 
 $db->table('my_new_table_name')->schema('schema as array')->create();
@@ -677,7 +556,6 @@ $db->table('my_new_table_name')->schema('schema as array')->create();
 EX : 
 
 ```php
-use PHPtricks\Orm\Database;
 $db = Database::connect();
 
 $db->table('students')->schema([
@@ -764,9 +642,92 @@ $db->table('table')->alterSchema(['drop', 'column_name'])->alter();
 ```php
 $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 ```
+## Deleted Methods
+    empty()
 
 
-# Advanced Usage
+# New in v 3.2.0
+### parseWhere(array $cons, $type = "AND")
+```php
+ $con = [
+    [
+        'age', '<', '30'
+    ],
+    'OR' => [
+        'sex', '=', 'female'
+    ],
+    'AND' => [
+        'position', '=', 'manager'
+    ]
+];
+
+// ---
+
+$db->table('table_name')->
+    ->where('username', 'ALI')
+    ->parseWhere($con)->select();
+    
+// SELECT * FROM table_name where username='ALI' AND (age<30 OR sex='female AND position='manager')
+// OR
+
+$db->table('table_name')->
+    ->where('username', 'ALI')
+    ->parseWhere($con, 'OR;)->select();
+    
+// SELECT * FROM table_name where username='ALI' OR (age<30 OR sex='female AND position='manager')
+```
+
+### lastInsertedId()
+after insert into database you can retrieve last inserted ID
+
+```php
+$insert = $db->table('table_name')->insert($insertArray);
+echo $insert->lastInsertedId();
+
+// or
+$db->table('table_name')->insert($insertArray);
+echo $db->lastInsertedId();
+
+```
+### createOrUpdate($values, $conditionColumn = [])
+now you can check if record exist to update or create new one in easy
+
+``` php
+$db = \PHPtricks\Orm\Database::connect();
+
+// check in table users if we have username (AL-Azzawi)
+// update it if not create new one
+
+$users = $db->table('users')->createOrUpdate([
+	'username' => 'Mohammad Walid AL-Anzawi',
+	'password' => 'mySecretPass',
+	'active'   => 1,
+], ['username', 'AL-Anzawi']);
+```
+note: $conditionColumn is optional but you need to send ID column manually
+```php
+$users = $db->table('users')->createOrUpdate([
+    'id'       => 8
+	'username' => 'Mohammad Walid AL-Anzawi',
+	'password' => 'mySecretPass',
+	'active'   => 1,
+]);
+```
+
+### findBy($column, $value)
+now you can find record with custom field
+example :
+```php
+$user = $db->table('users')->findBy('username', 'mohammad');
+
+var_dump($user->select());
+var_dump($user->first());
+var_dump($user->paginate());
+```
+DONT FORGET find($id) method ;)
+
+
+## Advanced Usage
  - `COMING SOON`
 
 ### THATS IT :) 
@@ -774,20 +735,20 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 ### I HOPE THIE HELP YOU.
 
 =============================
-# Change Log
+## Change Log
 
-<<<<<<< HEAD
+#### 4.1.0
+* ADD : parseWhere(array $cons, $type = "AND") method
+* ADD : lastInsertedId() method
+* ADD : createOrUpdate($values, $conditionColumn = []) method
+* ADD : findBy($column, $value) method
+* REMOVE: empty() method
+
 ### 4.0.0
 * MODIFY : namesace to `PHPtricks\Orm`
 * MODIFY : files structure
-=======
-### 3.2.0
-* ADD    : Order By (orderBy())
-* ADD    : get Latest Data inserted into table
-* MODIFY : last() method to return last -n- recordes
->>>>>>> origin/master
 
-### 3.1.0
+#### 3.1.0
 * FIX : Duplicate connection
 * ADD : Some methods
     * each() -> to each all collection values
@@ -799,7 +760,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     * toJson() -> to convert results to json format
 * ADD : convert results to json format when use collection as string automaticlly
 
-### 3.0.0
+#### 3.0.0
 * ADD    : direct update functionality
 * FIX    : dataView method with first method
 * MODIFY : methods chaining technique
@@ -807,7 +768,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     * but you can use results as array or object
     * any time you can add ->results() to convert to array or object
 
-### 2.1.0
+#### 2.1.0
 * Add : pagination functionality
 * Add : count method
 * Add : dataView method (to display 'selected results' in table)
@@ -830,6 +791,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
 * ADD : offset function
 * rebuilt 80% of methods
 * change License terms
+
 #### 1.1.0
 
 * ADD Some Data Definition Language (DDL) functions.

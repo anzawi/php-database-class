@@ -6,7 +6,7 @@
  * @author phptricks Team - Mohammad Anzawi
  * @author_uri https://phptricks.org
  * @uri https://github.com/anzawi/php-database-class
- * @version 4.0.0
+ * @version 4.1.0
  * @licence MIT -> https://opensource.org/licenses/MIT
  * @package PHPtricks\Database
  */
@@ -35,89 +35,99 @@ class Database implements \IteratorAggregate, \ArrayAccess
 	 *
 	 * DON'T pass parameters to __construct.
 	 */
-    protected function __construct()
-    {
-	    // class correct method as database driver selected in config file
-	    call_user_func_array([$this, \config()], [null]);
-    }
+	protected function __construct()
+	{
+		// class correct method as database driver selected in config file
+		call_user_func_array([$this, \config()], [null]);
+	}
 
-    // foreach results
+	// foreach results
 	public function getIterator()
 	{
 		$o = new \ArrayObject($this->_results);
 		return $o->getIterator();
 	}
 
-    /**
-     * DB::connect()
-     * return instance
-     * @return object
-     */
-    public static function connect()
-    {
-	    // do deny duplicate connection
-	    // check if $_instance is null or not
-	    // if null so connect database
-	    // otherwise return current connection object
-        if(!isset(self::$_instance) || self::$_instance == null) {
-            self::$_instance = new Database();
-        }
+	/**
+	 * DB::connect()
+	 * return instance
+	 * @return object
+	 */
+	public static function connect()
+	{
+		// do deny duplicate connection
+		// check if $_instance is null or not
+		// if null so connect database
+		// otherwise return current connection object
+		if(!isset(self::$_instance) || self::$_instance == null) {
+			self::$_instance = new Database();
+		}
 
-        return self::$_instance;
-    }
+		return self::$_instance;
+	}
 
-    protected function collection($collection)
-    {
-        return new Collection($collection, self::$_instance); 
-    }
+	protected function collection($collection)
+	{
+		return new Collection($collection, self::$_instance);
+	}
 
-    protected function getCollection($table)
-    {
-        if(isset($this->__cach[md5($table)]))
-        {
-            return true;
-        }
+	protected function getCollection($table)
+	{
+		if(isset($this->__cach[md5($table)]))
+		{
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
 
-    /**
-     * DB::error()
-     * return _error variable
-     * @return bool
-     */
-    public function error()
-    {
-        return $this->_error;
-    }
+	/**
+	 * @param $offset
+	 * @return $this
+	 */
+	public function offset($offset)
+	{
+		$this->_query .=" OFFSET " .$offset;
+		return $this;
+	}
 
-    /**
-     * set _table var value
-     * @param  string $table the table name
-     * @return object - DBContent
-     */
-    public function table($table)
-    {
-        $this->_table = $table;
-        return $this;
-    }
+	/**
+	 * DB::error()
+	 * return _error variable
+	 * @return bool
+	 */
+	public function error()
+	{
+		return $this->_error;
+	}
+
+	/**
+	 * set _table var value
+	 * @param  string $table the table name
+	 * @return object - DBContent
+	 */
+	public function table($table)
+	{
+		$this->_table = $table;
+		return $this;
+	}
 
 	/**
 	 * change id columns name
 	 * @param string $idName
 	 */
-    public function idName($idName = "id")
-    {
-	    $this->_idColumn = $idName;
+	public function idName($idName = "id")
+	{
+		$this->_idColumn = $idName;
 
-	    return $this;
-    }
+		return $this;
+	}
 
-    public function results()
-    {
-        return $this->_results;
-    }
+	public function results()
+	{
+		return $this->_results;
+	}
 
 
 	/**

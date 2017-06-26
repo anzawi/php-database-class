@@ -2,7 +2,7 @@
 
 /**
  * Get Config from database_config file in easy
-*/
+ */
 function config($path = '')
 {
 	$config = include(dirname(__FILE__) . '/database_config.php');
@@ -43,8 +43,8 @@ function config($path = '')
 
 /**
  * Generate Column Name when use Database::dataView() method
- * 
- * convert column_name and columnName to Column Name 
+ *
+ * convert column_name and columnName to Column Name
  */
 function getColumnName($columnName = '')
 {

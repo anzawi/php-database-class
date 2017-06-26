@@ -9,7 +9,7 @@ trait Insert
 	 * insert into database tables
 	 * @param string $table
 	 * @param array $values
-	 * @return bool
+	 * @return mixed
 	 */
 	public function insert($values = [])
 	{
@@ -45,10 +45,52 @@ trait Insert
 			$sql .= " VALUES({$value})";
 			// check if query is not have an error
 			if(!$this->query($sql, $values)->error()) {
-				return true;
+				return $this;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * get last inserted ID
+	 * @return int
+	 */
+	public function lastInsertedId()
+	{
+		return $this->_pdo->lastInsertId();
+	}
+
+	/**
+	 * insert or update if exists
+	 * @param $values
+	 * @param array $conditionColumn
+	 * @return bool|mixed
+	 */
+	public function createOrUpdate($values, $conditionColumn = [])
+	{
+		// check if we have condition for update
+		// the condition must be ([column_name, value])
+		if(count($conditionColumn))
+		{
+			$column = $conditionColumn[0];
+			$value  = $conditionColumn[1];
+		}
+		else // if no condition so search by ID
+		{
+			$column = $this->_idColumn;
+			$value  = isset($value[$this->_ColumnsId]) ? $value[$this->_ColumnsId] : null;
+		}
+
+		// check if any records exists by condition
+		$exists = $this->findBy($column, $value)->first()->results();
+		// if exist so update the record's
+		if(count($exists))
+		{
+			return $this->where($column, $value)
+				->update($values);
+		}
+		// insert new record
+		return $this->insert($values);
 	}
 }

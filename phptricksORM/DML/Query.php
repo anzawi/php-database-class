@@ -15,7 +15,8 @@ trait Query
 	 */
 	public function query($sql, $params = [])
 	{
-		// echo $sql;
+		// uncomment this line to see your query
+		// var_dump($sql);
 		$this->_query = "";
 		$this->_where = "WHERE";
 		// set _error. true to that if they can not be false for this function to work properly, this function makes the
@@ -116,7 +117,7 @@ trait Query
 	 */
 	public function find($id)
 	{
-		return $result = $this->where($this->_idColumn, $id)
+		return $this->where($this->_idColumn, $id)
 			->first();
 	}
 
@@ -141,5 +142,18 @@ trait Query
 			'table'   => $this->_table,
 			'id'      => $this->_idColumn
 		]);
+	}
+
+	/**
+	 * find records by columns
+	 * USING :
+	 * $db->findBy('username', 'ali')->first(); // or select() or paginate()
+	 * @param $column
+	 * @param $value
+	 * @return mixed
+	 */
+	public function findBy($column, $value)
+	{
+		return $this->where($column, $value);
 	}
 }
