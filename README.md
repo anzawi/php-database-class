@@ -42,12 +42,12 @@ any suggestions would you like added or modified write to us at team@phptricks.o
  
 ```php
     <?php
-    include_once('phptricks/Database.php');
+    include_once('vendor/autoload.php');
 ```
 ### step 2 :
 - Create the instance (connect with database)
 ```php
-    use PHPtricks\Database\Database;
+    use PHPtricks\Orm\Database;
     $db = Database::connect();
 ```
 
@@ -646,7 +646,7 @@ $db->table('users')->alterSchema(['drop', 'full_name'])->alter();
     empty()
 
 
-# New in v 3.2.0
+# New in v 4.1.0
 ### parseWhere(array $cons, $type = "AND")
 ```php
  $con = [
