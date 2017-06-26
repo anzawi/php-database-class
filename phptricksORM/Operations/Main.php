@@ -6,6 +6,7 @@ trait Main
 {
 	use Where;
 	use Cond;
+	use parseWhere;
 	use Other;
 
 	/**

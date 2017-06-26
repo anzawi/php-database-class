@@ -24,11 +24,33 @@ class ComposerStaticInit4632db9e427f086ffa7811811a22845f
         ),
     );
 
+    public static $classMap = array (
+        'PHPtricks\\Orm\\Collection\\Collection' => __DIR__ . '/../..' . '/phptricksORM/Collection/Collection.php',
+        'PHPtricks\\Orm\\DDL\\Alter' => __DIR__ . '/../..' . '/phptricksORM/DDL/Alter.php',
+        'PHPtricks\\Orm\\DDL\\Base' => __DIR__ . '/../..' . '/phptricksORM/DDL/Base.php',
+        'PHPtricks\\Orm\\DDL\\Create' => __DIR__ . '/../..' . '/phptricksORM/DDL/Create.php',
+        'PHPtricks\\Orm\\DML\\Delete' => __DIR__ . '/../..' . '/phptricksORM/DML/Delete.php',
+        'PHPtricks\\Orm\\DML\\Insert' => __DIR__ . '/../..' . '/phptricksORM/DML/Insert.php',
+        'PHPtricks\\Orm\\DML\\Main' => __DIR__ . '/../..' . '/phptricksORM/DML/Main.php',
+        'PHPtricks\\Orm\\DML\\Paginate' => __DIR__ . '/../..' . '/phptricksORM/DML/Paginate.php',
+        'PHPtricks\\Orm\\DML\\Query' => __DIR__ . '/../..' . '/phptricksORM/DML/Query.php',
+        'PHPtricks\\Orm\\DML\\Update' => __DIR__ . '/../..' . '/phptricksORM/DML/Update.php',
+        'PHPtricks\\Orm\\Database' => __DIR__ . '/../..' . '/phptricksORM/Database.php',
+        'PHPtricks\\Orm\\Operations\\Cond' => __DIR__ . '/../..' . '/phptricksORM/Operations/Cond.php',
+        'PHPtricks\\Orm\\Operations\\Main' => __DIR__ . '/../..' . '/phptricksORM/Operations/Main.php',
+        'PHPtricks\\Orm\\Operations\\Other' => __DIR__ . '/../..' . '/phptricksORM/Operations/Other.php',
+        'PHPtricks\\Orm\\Operations\\Where' => __DIR__ . '/../..' . '/phptricksORM/Operations/Where.php',
+        'PHPtricks\\Orm\\Operations\\parseWhere' => __DIR__ . '/../..' . '/phptricksORM/Operations/praseWhere.php',
+        'PHPtricks\\Orm\\Providers\\Provider' => __DIR__ . '/../..' . '/phptricksORM/Providers/Provider.php',
+        'PHPtricks\\Orm\\Variables' => __DIR__ . '/../..' . '/phptricksORM/Variables.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit4632db9e427f086ffa7811811a22845f::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit4632db9e427f086ffa7811811a22845f::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit4632db9e427f086ffa7811811a22845f::$classMap;
 
         }, null, ClassLoader::class);
     }

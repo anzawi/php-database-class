@@ -7,11 +7,7 @@ trait parseWhere {
 	/**
 	 * How to use
 	 * $con = [
-	 * 'type' => 'AND'//OR -> optional by default 'AND'
 	 *  [
-	 *      'age', '<', '30'
-	 *  ],
-	 *  'OR' => [
 	 *      'sex', '=', 'female'
 	 *  ],
 	 * 'AND' => [
@@ -27,22 +23,30 @@ trait parseWhere {
 
 		foreach ($cons as $con => $st)
 		{
-			if(!is_numeric($st[2]))
-				$st[2] = "'$st[2]'";
-			else
-				$st[2] = "`$st[2]`";
+			if(is_array($st))
+			{
+				if(!is_numeric($st[2]))
+					$st[2] = "'$st[2]'";
+				else
+					$st[2] = "`$st[2]`";
 
-			if (strtolower($con) === 'none' || $con === 0)
-			{
-				$this->_query .= " `{$st[0]}` $st[1] $st[2] ";
-			}
-			else
-			{
-				if ($this->con($con))
+				if (strtolower($con) === 'none' || $con === 0)
 				{
-					$this->_query .= " {$con} `{$st[0]}` $st[1] $st[2] ";
+					$this->_query .= " `{$st[0]}` $st[1] $st[2] ";
+				}
+				else
+				{
+					if ($this->con($con))
+					{
+						$this->_query .= " {$con} `{$st[0]}` $st[1] $st[2] ";
+					}
 				}
 			}
+			else
+			{
+				$this->_query .= " `{$cons[0]}` $cons[1] $cons[2] ";
+			}
+			
 		}
 
 		$this->_query .= ')';
