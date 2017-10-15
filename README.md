@@ -214,7 +214,7 @@ use PHPtricks\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user->name = 'Mohammad';
-$user->email = team@phptricks.org;
+$user->email = 'team@phptricks.org';
 $user->save();
 ```
 is this example we configure "fetch" to array
@@ -224,7 +224,7 @@ use PHPtricks\Database;
 $db = Database::connect();
 $user = $db->table('users')->find('1');
 $user['name'] = 'Mohammad';
-$user['email'] = team@phptricks.org;
+$user['email'] = 'team@phptricks.org';
 $user->save();
 ```
 but you cant use __save__ with multi rows
@@ -445,7 +445,7 @@ to order results " ORDER BY "
 ```php
 $db->table('posts')
     ->notIn('id', [1, 2, 3, 4, 5])
-    ->orderBy('id', 'DESC)
+    ->orderBy('id', 'DESC')
     ->select();
     
 // OR
