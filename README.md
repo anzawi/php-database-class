@@ -9,7 +9,7 @@ A database class which uses the PDO extension.
 If you have any issue please open issue to fix it.
 
 ```
-any suggestions would you like added or modified write to us at team@phptricks.org
+any suggestions would you like added or modified write to us at <m.anzawi2013@gmail.com>
 ```
 ### install via composer 
 ```json
