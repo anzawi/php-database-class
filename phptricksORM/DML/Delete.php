@@ -10,8 +10,24 @@ trait Delete
 	 */
 	public function delete()
 	{
-		$results = (array)$this->_results;
-		if($this->count() == 1)
+        $results = (array)$this->_results;
+
+        // check if its empty
+        if(!count($results))
+        {
+            // try to call select() method
+            try
+            {
+                $results = (array)$this->select()->results();
+                if(count($results) == 1) $results = $results[0];
+            }
+            catch (\Exception $e)
+            {
+                return false;
+            }
+        }
+
+        if($this->count() == 1)
 		{
 			return $this->remove($results);
 		}
