@@ -5,7 +5,14 @@
  */
 function config($path = '')
 {
-	$config = include(dirname(__FILE__) . '/database_config.php');
+    if(defined('DATABASE_CONFIG_FILE')){
+        $configFile = DATABASE_CONFIG_FILE;
+    }
+    if(false === $env){
+        $configFile = dirname(__FILE__) . '/database_config.php';
+    }
+
+	$config = include($configFile);
 	if(strpos($path, ".") !== false)
 		$path = explode(".", $path);
 
