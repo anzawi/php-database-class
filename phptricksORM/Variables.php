@@ -65,4 +65,8 @@ trait Variables
 		 * @var $_idColumn string|null id columns name for current table by default is id
 		 */
 		$_idColumn = "id";
+		
+	public function getPdo(){
+	    return $this->_pdo;
+    }
 }
