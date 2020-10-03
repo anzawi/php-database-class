@@ -1,5 +1,5 @@
 {
-  "name": "phptricks/phptricksORM",
+  "name": "phptricks/phptricks-orm",
   "description": "A database class which uses the PDO extension, Supports many drivers",
   "homepage": "https://anzawi.github.io/phptricks-orm/",
   "type": "library",
