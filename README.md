@@ -80,6 +80,11 @@ $user->insert([
 [PHPtricks-ORM Full Documentation](https://anzawi.github.io/phptricksorm-docs)
 
 
+
+
+[Follow Me On Twitter](https://twitter.com/Al_Anzawi)
+
+
 #### Change Log : 
 
 #### 5.0.0
@@ -87,6 +92,7 @@ $user->insert([
 * ADD : Migrations
 * ADD : Commands-line
 * ADD : Joins [Models Relation]
+* ADD : `groupBy()` method
 * ADD : `toJsonFormatted()` method
 * ADD : `drop()` method - to delete tables
 * MODIFY : Database Class 
