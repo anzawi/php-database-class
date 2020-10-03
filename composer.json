@@ -1,14 +1,14 @@
 {
   "name": "phptricks/phptricks-orm",
   "description": "A database class which uses the PDO extension, Supports many drivers",
-  "homepage": "https://anzawi.github.io/phptricks-orm/",
+  "homepage": "https://github.com/anzawi/php-database-class",
   "type": "library",
   "license": "MIT",
   "support": {
     "email": "m.anzawi2013@gmail.com",
     "issues": "https://github.com/anzawi/php-database-class/issues",
     "source": "https://github.com/anzawi/php-database-class",
-    "docs": "https://anzawi.github.io/phptricks-orm/"
+    "docs": "https://anzawi.github.io/phptricksorm-docs/"
   },
   "authors": [
     {
