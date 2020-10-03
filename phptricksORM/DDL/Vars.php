@@ -12,22 +12,25 @@
  *
  */
 
-namespace PHPtricks\Orm;
+namespace PHPtricks\Orm\DDL;
 
-trait Variables
+/**
+ * Trait Vars
+ *
+ * @package PHPtricks\Orm\DDL
+ */
+trait Vars
 {
 
     /**
-     * @var $_instance object
-     * store DB class object to allow one connection with database (deny
-     *     duplicate)
-     * @access private
+     * @var
      */
-    private static $_instance = null;
-    protected
+    protected $_table, $_errors;
+
+    private
         /**
-         * @var $_pdo object PDO object
+         * @var $_schema string store DDL sql query
          */
-        $_pdo;
+        $_schema;
 
 }

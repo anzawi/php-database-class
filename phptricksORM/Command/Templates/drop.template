@@ -1,0 +1,14 @@
+<?php
+
+require_once 'vendor/autoload.php';
+
+use PHPtricks\Orm\Builder;
+class {%CLASS_NAME%} extends Builder
+{
+    protected $_table = '{%TABLE_NAME%}';
+
+    public function run()
+    {
+        return $this->drop();
+    }
+}

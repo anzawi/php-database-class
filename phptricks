@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+// application.php
+
+require __DIR__.'/vendor/autoload.php';
+
+use PHPtricks\Orm\Command\Alter;
+use PHPtricks\Orm\Command\Create;
+use PHPtricks\Orm\Command\Drop;
+use PHPtricks\Orm\Command\Config\GetConfig;
+use PHPtricks\Orm\Command\Make;
+use PHPtricks\Orm\Command\Migrate;
+use PHPtricks\Orm\Command\Model;
+use Symfony\Component\Console\Application;
+
+$application = new Application("PHPtricks-orm", "5.0.0");
+
+// register commands
+$application->add(new Make());
+$application->add(new Migrate());
+$application->add(new Create());
+$application->add(new Alter());
+$application->add(new Drop());
+$application->add(new GetConfig());
+$application->add(new Model());
+
+$application->run();

@@ -1,0 +1,17 @@
+<?php
+
+require_once 'vendor/autoload.php';
+
+use PHPtricks\Orm\Builder;
+class {%CLASS_NAME%} extends Builder
+{
+    protected $_table = '{%TABLE_NAME%}';
+
+    public function run()
+    {
+        return $this->alterSchema(['add', 'column_name', 'column_name'])->alter();
+        // return $this->alterSchema(['rename', 'column_name', 'new_column_name' ,'type'])->alter();
+        // return $this->alterSchema(['modify', 'column_name', 'new_type'])->alter();
+        // return $this->alterSchema(['drop', 'column_name'])->alter();
+    }
+}

@@ -1,0 +1,13 @@
+<?php
+
+use PHPtricks\Orm\Model;
+
+class {%CLASS_NAME%} extends Model
+{
+    protected $_table = '{%TABLE_NAME%}';
+
+    public function getAllDataAsArrayOrObject()
+    {
+        return $this->select()->results();
+    }
+}

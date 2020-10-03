@@ -12,22 +12,29 @@
  *
  */
 
+
 namespace PHPtricks\Orm;
 
-trait Variables
+use PHPtricks\Orm\DDL\Base;
+
+/**
+ * Class Builder
+ * @since version 5.0.0
+ * @package PHPtricks\Orm
+ */
+class Builder extends Database
 {
 
+    use Base;
+
     /**
-     * @var $_instance object
-     * store DB class object to allow one connection with database (deny
-     *     duplicate)
-     * @access private
+     * Builder constructor.
      */
-    private static $_instance = null;
-    protected
-        /**
-         * @var $_pdo object PDO object
-         */
-        $_pdo;
+    public function __construct()
+    {
+        /** @var PDO $db */
+        $db         = parent::connect();
+        $this->_pdo = $db->_pdo;
+    }
 
 }

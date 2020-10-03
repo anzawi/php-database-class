@@ -1,0 +1,21 @@
+<?php
+
+require_once 'vendor/autoload.php';
+
+use PHPtricks\Orm\Builder;
+class {%CLASS_NAME%} extends Builder
+{
+    protected $_table = '{%TABLE_NAME%}';
+
+    public function run()
+    {
+        return $this->schema([
+            'id' => 'increments',
+            'string' => 'string:255|not_null|unique',
+            'datetime' => 'datetime',
+            'integer' => 'int|unsigned',
+            'unique' => 'string:255|not_null|unique',
+            'created_at' => 'timestamp',
+        ])->create();
+    }
+}
