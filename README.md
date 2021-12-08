@@ -80,11 +80,6 @@ $user->insert([
 [PHPtricks-ORM Full Documentation](https://anzawi.github.io/phptricksorm-docs)
 
 
-
-
-[Follow Me On Twitter](https://twitter.com/Al_Anzawi)
-
-
 #### Change Log : 
 
 #### 5.0.0
